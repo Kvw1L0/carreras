@@ -1,49 +1,73 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Mando Carrera</title>
+    <title>Jungle - Carrera</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; background: #222; color: white; overflow: hidden; touch-action: none; }
+        /* Look and Feel Jungle */
+        :root { --jungle-yellow: #FFE600; --jungle-black: #111111; }
         
-        .pantalla { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Arial Black', sans-serif; background: var(--jungle-black); color: var(--jungle-yellow); overflow: hidden; touch-action: none; }
+        
+        .con-fondo { background: url('fondo.png') center center / cover no-repeat; background-color: var(--jungle-black); }
+
+        .pantalla { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; position: absolute; top: 0; left: 0; }
         .activa { display: flex; animation: aparecer 0.3s ease-in; }
         @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        h2 { text-align: center; margin-bottom: 20px; font-size: 28px; }
-        input { padding: 15px; font-size: 20px; border-radius: 8px; border: none; width: 80%; text-align: center; font-weight: bold; margin-bottom: 20px; outline: none; }
-        .btn-accion { padding: 15px 40px; font-size: 20px; border: none; border-radius: 8px; background: #2ed573; color: white; font-weight: bold; cursor: pointer; width: 80%; }
+        h2 { text-align: center; margin-bottom: 20px; font-size: 28px; text-transform: uppercase; text-shadow: 2px 2px 0px #000; letter-spacing: 2px; }
+        input { padding: 15px; font-size: 20px; border-radius: 0px; border: 4px solid var(--jungle-yellow); width: 80%; text-align: center; font-weight: bold; margin-bottom: 20px; outline: none; background: #000; color: #fff; text-transform: uppercase; }
+        input::placeholder { color: #555; }
+        
+        .btn-accion { padding: 15px 40px; font-size: 22px; border: none; background: var(--jungle-yellow); color: var(--jungle-black); font-weight: bold; cursor: pointer; width: 80%; text-transform: uppercase; box-shadow: 4px 4px 0px #000; transition: transform 0.1s; }
+        .btn-accion:active { transform: translate(4px, 4px); box-shadow: none; }
 
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 400px; }
-        .btn-equipo { padding: 20px 10px; font-size: 18px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 400px; }
+        .btn-equipo { padding: 20px 10px; font-size: 18px; border: 4px solid #000; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-family: 'Arial Black'; }
         
-        #zona-tap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; transition: filter 0.5s; }
-        #mensaje-tap { font-size: 40px; font-weight: bold; text-align: center; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); pointer-events: none; }
+        /* Instrucciones Móvil */
+        #popup-instrucciones { background: var(--jungle-black); z-index: 50; text-align: center; padding: 30px; border: 8px solid var(--jungle-yellow); }
+        .caja-instruccion { border: 4px solid var(--jungle-yellow); padding: 20px; background: #000; margin-bottom: 30px; }
+        #contador-gigante { font-size: 140px; font-weight: bold; color: var(--jungle-yellow); text-shadow: 4px 4px 0px #000; display: none; }
+
+        #zona-tap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; transition: filter 0.5s; z-index: 10; border: 10px solid var(--jungle-yellow); box-sizing: border-box; }
+        #mensaje-tap { font-size: 45px; font-weight: bold; text-align: center; color: white; text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000, 0 10px 20px rgba(0,0,0,0.8); pointer-events: none; text-transform: uppercase; line-height: 1.1; }
         
-        .flotante { position: absolute; color: white; font-size: 30px; font-weight: bold; pointer-events: none; animation: subir 0.4s ease-out forwards; text-shadow: 1px 1px 2px black;}
-        @keyframes subir { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.5); } }
+        .flotante { position: absolute; color: var(--jungle-yellow); font-weight: bold; pointer-events: none; animation: subir 0.4s ease-out forwards; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; }
+        @keyframes subir { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(1.5); } }
         
-        @keyframes arcoiris { 0% { background: #FF0000; } 20% { background: #FF9500; } 40% { background: #4CD964; } 60% { background: #007AFF; } 80% { background: #E91E63; } 100% { background: #FF0000; } }
-        .victoria { animation: arcoiris 0.3s infinite linear !important; }
+        @keyframes victoriaJungle { 0% { background: var(--jungle-yellow); } 50% { background: #fff; } 100% { background: var(--jungle-yellow); } }
+        .victoria { animation: victoriaJungle 0.2s infinite linear !important; }
         .derrota { filter: grayscale(100%); opacity: 0.5; pointer-events: none; }
     </style>
 </head>
-<body>
+<body class="con-fondo">
 
     <div id="pantalla-nombre" class="pantalla activa">
-        <h2>¿Cómo te llamas?</h2>
-        <input type="text" id="input-nombre" placeholder="Tu Apodo..." maxlength="12" autocomplete="off">
-        <button class="btn-accion" onclick="guardarNombre()">Siguiente</button>
+        <h2>Ingresa tu nombre</h2>
+        <input type="text" id="input-nombre" placeholder="TU NOMBRE..." maxlength="12" autocomplete="off">
+        <button class="btn-accion" onclick="guardarNombre()">CONTINUAR</button>
     </div>
 
     <div id="pantalla-seleccion" class="pantalla">
-        <h2>Elige tu Caballo</h2>
+        <h2>ELIGE TU CABALLO</h2>
         <div class="grid" id="lista-equipos"></div>
+    </div>
+
+    <div id="popup-instrucciones" class="pantalla">
+        <div id="bloque-instrucciones">
+            <h1 style="color: var(--jungle-yellow); font-size: 35px; line-height: 1;">PREPARADOS PARA LA CARRERA</h1>
+            <div class="caja-instruccion">
+                <p style="font-size: 20px; color: #fff; margin: 0;">PRESIONA REPETIDAMENTE TU PANTALLA LO MÁS RÁPIDO QUE PUEDAS PARA QUE TU CABALLO AVANCE.</p>
+            </div>
+            <p style="font-size: 22px; color: var(--jungle-yellow); animation: parpadeo 1s infinite;">¡MIRA LA PANTALLA GIGANTE!</p>
+        </div>
+        <div id="contador-gigante">3</div>
     </div>
 
     <div id="pantalla-juego" class="pantalla" style="padding: 0;">
         <div id="zona-tap">
-            <div id="mensaje-tap">¡TOCA A LO BRUTO!</div>
+            <div id="mensaje-tap">¡PRESIONA<br>RÁPIDO!</div>
         </div>
     </div>
 
@@ -51,7 +75,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, update, set, increment, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Firebase Configuración Integrada
         const firebaseConfig = {
             apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw",
             authDomain: "hipodromo-56215.firebaseapp.com",
@@ -68,10 +91,27 @@
 
         let miNombre = "";
         let miEquipo = null;
+        let estadoJuego = 'espera';
         const miID = Math.random().toString(36).substring(2, 10); 
         
         const zonaTap = document.getElementById('zona-tap');
         const msj = document.getElementById('mensaje-tap');
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function reproducirPop() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
 
         window.guardarNombre = () => {
             const input = document.getElementById('input-nombre').value.trim();
@@ -79,6 +119,7 @@
                 miNombre = input.toUpperCase();
                 document.getElementById('pantalla-nombre').classList.remove('activa');
                 document.getElementById('pantalla-seleccion').classList.add('activa');
+                if(audioCtx.state === 'suspended') audioCtx.resume(); 
             }
         };
 
@@ -86,21 +127,20 @@
             const b = document.createElement('button');
             b.className = 'btn-equipo';
             b.style.background = COLORES[i-1];
-            b.innerHTML = `🐎 Equipo ${i}`;
+            b.innerHTML = `🐎 CABALLO ${i}`;
             b.onclick = () => unirse(i);
             document.getElementById('lista-equipos').appendChild(b);
         }
 
         function unirse(id) {
             miEquipo = id;
-            
             const jugadorRef = ref(db, `equipos/${id}/jugadores/${miID}`);
             set(jugadorRef, miNombre);
-            
             onDisconnect(jugadorRef).remove();
 
             document.getElementById('pantalla-seleccion').classList.remove('activa');
-            document.getElementById('pantalla-juego').classList.add('activa');
+            document.getElementById('popup-instrucciones').classList.add('activa');
+            document.body.classList.remove('con-fondo'); 
             zonaTap.style.background = COLORES[id-1];
             
             iniciarMecanicas(id);
@@ -110,29 +150,53 @@
             const equipoRef = ref(db, `equipos/${id}`);
 
             onValue(ref(db, 'estado'), (snapshot) => {
-                if(snapshot.val() === 'carrera') {
+                estadoJuego = snapshot.val();
+                
+                if(estadoJuego === 'cuenta_regresiva') {
+                    document.getElementById('bloque-instrucciones').style.display = 'none';
+                    const contador = document.getElementById('contador-gigante');
+                    contador.style.display = 'block';
+                    
+                    let cuenta = 3;
+                    contador.innerText = cuenta;
+                    const intervalo = setInterval(() => {
+                        cuenta--;
+                        if(cuenta > 0) {
+                            contador.innerText = cuenta;
+                        } else {
+                            clearInterval(intervalo);
+                        }
+                    }, 1000);
+                }
+                
+                if(estadoJuego === 'carrera') {
+                    document.getElementById('popup-instrucciones').classList.remove('activa');
+                    document.getElementById('pantalla-juego').classList.add('activa');
                     zonaTap.classList.remove('victoria', 'derrota');
-                    msj.innerText = "¡TOCA A LO BRUTO!";
+                    msj.innerHTML = "¡PRESIONA<br>RÁPIDO!";
                 }
             });
 
             onValue(ref(db, 'ganadorAbsoluto'), (snapshot) => {
                 const ganador = snapshot.val();
-                if (ganador) {
+                if (ganador && estadoJuego === 'carrera') {
                     if (miEquipo === ganador) {
                         zonaTap.classList.add('victoria');
                         msj.innerText = "¡GANAMOS! 🏆";
                         if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000, 500, 2000]); 
                     } else {
                         zonaTap.classList.add('derrota');
-                        msj.innerText = "FIN DE LA CARRERA";
+                        msj.innerText = "FIN DE CARRERA";
                     }
                 }
             });
 
             zonaTap.addEventListener('touchstart', (e) => {
                 e.preventDefault();
+                if(estadoJuego !== 'carrera') return; 
+
                 update(equipoRef, { clicksTotales: increment(1) });
+                reproducirPop(); 
                 
                 if (navigator.vibrate) navigator.vibrate(15); 
 
@@ -140,6 +204,10 @@
                     const num = document.createElement('div');
                     num.className = 'flotante';
                     num.innerText = '+1';
+                    
+                    const tamaño = Math.floor(Math.random() * (55 - 35 + 1)) + 35;
+                    num.style.fontSize = tamaño + 'px';
+                    
                     num.style.left = touch.clientX + 'px';
                     num.style.top = touch.clientY + 'px';
                     zonaTap.appendChild(num);
