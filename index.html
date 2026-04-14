@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Mando Carrera</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; background: #222; color: white; overflow: hidden; touch-action: none; }
+        
+        .pantalla { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+        .activa { display: flex; animation: aparecer 0.3s ease-in; }
+        @keyframes aparecer { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        h2 { text-align: center; margin-bottom: 20px; font-size: 28px; }
+        input { padding: 15px; font-size: 20px; border-radius: 8px; border: none; width: 80%; text-align: center; font-weight: bold; margin-bottom: 20px; outline: none; }
+        .btn-accion { padding: 15px 40px; font-size: 20px; border: none; border-radius: 8px; background: #2ed573; color: white; font-weight: bold; cursor: pointer; width: 80%; }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 400px; }
+        .btn-equipo { padding: 20px 10px; font-size: 18px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        
+        #zona-tap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; transition: filter 0.5s; }
+        #mensaje-tap { font-size: 40px; font-weight: bold; text-align: center; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); pointer-events: none; }
+        
+        .flotante { position: absolute; color: white; font-size: 30px; font-weight: bold; pointer-events: none; animation: subir 0.4s ease-out forwards; text-shadow: 1px 1px 2px black;}
+        @keyframes subir { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.5); } }
+        
+        @keyframes arcoiris { 0% { background: #FF0000; } 20% { background: #FF9500; } 40% { background: #4CD964; } 60% { background: #007AFF; } 80% { background: #E91E63; } 100% { background: #FF0000; } }
+        .victoria { animation: arcoiris 0.3s infinite linear !important; }
+        .derrota { filter: grayscale(100%); opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-nombre" class="pantalla activa">
+        <h2>¿Cómo te llamas?</h2>
+        <input type="text" id="input-nombre" placeholder="Tu Apodo..." maxlength="12" autocomplete="off">
+        <button class="btn-accion" onclick="guardarNombre()">Siguiente</button>
+    </div>
+
+    <div id="pantalla-seleccion" class="pantalla">
+        <h2>Elige tu Caballo</h2>
+        <div class="grid" id="lista-equipos"></div>
+    </div>
+
+    <div id="pantalla-juego" class="pantalla" style="padding: 0;">
+        <div id="zona-tap">
+            <div id="mensaje-tap">¡TOCA A LO BRUTO!</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, update, set, increment, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Firebase Configuración Integrada
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw",
+            authDomain: "hipodromo-56215.firebaseapp.com",
+            databaseURL: "https://hipodromo-56215-default-rtdb.firebaseio.com",
+            projectId: "hipodromo-56215",
+            storageBucket: "hipodromo-56215.firebasestorage.app",
+            messagingSenderId: "793993929295",
+            appId: "1:793993929295:web:febbad383d625d60c3c03a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const COLORES = ['#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55', '#E91E63', '#00BCD4'];
+
+        let miNombre = "";
+        let miEquipo = null;
+        const miID = Math.random().toString(36).substring(2, 10); 
+        
+        const zonaTap = document.getElementById('zona-tap');
+        const msj = document.getElementById('mensaje-tap');
+
+        window.guardarNombre = () => {
+            const input = document.getElementById('input-nombre').value.trim();
+            if(input.length > 0) {
+                miNombre = input.toUpperCase();
+                document.getElementById('pantalla-nombre').classList.remove('activa');
+                document.getElementById('pantalla-seleccion').classList.add('activa');
+            }
+        };
+
+        for(let i=1; i<=10; i++) {
+            const b = document.createElement('button');
+            b.className = 'btn-equipo';
+            b.style.background = COLORES[i-1];
+            b.innerHTML = `🐎 Equipo ${i}`;
+            b.onclick = () => unirse(i);
+            document.getElementById('lista-equipos').appendChild(b);
+        }
+
+        function unirse(id) {
+            miEquipo = id;
+            
+            const jugadorRef = ref(db, `equipos/${id}/jugadores/${miID}`);
+            set(jugadorRef, miNombre);
+            
+            onDisconnect(jugadorRef).remove();
+
+            document.getElementById('pantalla-seleccion').classList.remove('activa');
+            document.getElementById('pantalla-juego').classList.add('activa');
+            zonaTap.style.background = COLORES[id-1];
+            
+            iniciarMecanicas(id);
+        }
+
+        function iniciarMecanicas(id) {
+            const equipoRef = ref(db, `equipos/${id}`);
+
+            onValue(ref(db, 'estado'), (snapshot) => {
+                if(snapshot.val() === 'carrera') {
+                    zonaTap.classList.remove('victoria', 'derrota');
+                    msj.innerText = "¡TOCA A LO BRUTO!";
+                }
+            });
+
+            onValue(ref(db, 'ganadorAbsoluto'), (snapshot) => {
+                const ganador = snapshot.val();
+                if (ganador) {
+                    if (miEquipo === ganador) {
+                        zonaTap.classList.add('victoria');
+                        msj.innerText = "¡GANAMOS! 🏆";
+                        if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000, 500, 2000]); 
+                    } else {
+                        zonaTap.classList.add('derrota');
+                        msj.innerText = "FIN DE LA CARRERA";
+                    }
+                }
+            });
+
+            zonaTap.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                update(equipoRef, { clicksTotales: increment(1) });
+                
+                if (navigator.vibrate) navigator.vibrate(15); 
+
+                Array.from(e.changedTouches).forEach(touch => {
+                    const num = document.createElement('div');
+                    num.className = 'flotante';
+                    num.innerText = '+1';
+                    num.style.left = touch.clientX + 'px';
+                    num.style.top = touch.clientY + 'px';
+                    zonaTap.appendChild(num);
+                    setTimeout(() => num.remove(), 400);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
