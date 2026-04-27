@@ -1,42 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Jungle TV Carrera</title>
+    <title>Jungle TV - Carrera</title>
     <style>
         :root { --jungle-yellow: #FFE600; --jungle-black: #111111; }
-
-        body { background: var(--jungle-black); color: var(--jungle-yellow); font-family: 'Arial Black', sans-serif; margin: 0; overflow: hidden; transition: filter 1s ease-out; }
-        
-        #pista { width: 100vw; height: 100vh; position: relative; background: #1a1a1a; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); will-change: transform; border-top: 5px solid var(--jungle-yellow); border-bottom: 5px solid var(--jungle-yellow); box-sizing: border-box; }
-        
-        .carril { height: 9.8vh; border-bottom: 2px dashed rgba(255, 230, 0, 0.2); position: relative; display: flex; align-items: center; }
-        
-        .caballo { position: absolute; left: 0; font-size: 6vh; transition: left 0.1s linear; z-index: 2; }
-        .info { position: absolute; left: 10px; z-index: 10; display: flex; flex-direction: column; justify-content: center; }
-        .titulo-eq { font-size: 2.2vh; color: var(--jungle-yellow); text-shadow: 2px 2px 0px #000; letter-spacing: 1px; }
-        .nombres-jugadores { font-size: 1.4vh; color: #fff; max-width: 15vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: sans-serif; font-weight: bold; text-transform: uppercase; }
-        
-        /* Meta Jungle (Cuadros Negro/Amarillo) */
-        .meta { position: absolute; right: 5%; top: 0; bottom: 0; width: 30px; background: repeating-linear-gradient(45deg, var(--jungle-black), var(--jungle-black) 20px, var(--jungle-yellow) 20px, var(--jungle-yellow) 40px); z-index: 0; border-left: 2px solid #fff; }
-
-        .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.7); }
-
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; }
-        
-        #titulo-inicio { font-size: 12vh; margin:0; color: var(--jungle-yellow); text-shadow: 5px 5px 0px #000; text-transform: uppercase; }
-        .sub-jungle { background: var(--jungle-yellow); color: var(--jungle-black); padding: 10px 30px; font-size: 3vh; text-transform: uppercase; margin-top: 20px; }
-        
-        #titulo-podio { font-size: 9vh; color: var(--jungle-yellow); text-shadow: 5px 5px 0px #000; margin-bottom: 30px; }
-        .puesto { font-size: 4vh; margin: 10px; padding: 15px 40px; background: var(--jungle-black); border: 4px solid var(--jungle-yellow); width: 60%; display: flex; justify-content: space-between; color: white; text-transform: uppercase; align-items: center; }
-        .oro { border-color: gold; color: gold; transform: scale(1.1); box-shadow: 0 0 40px rgba(255,215,0,0.3); }
-        .plata { border-color: silver; color: silver; }
-        .bronce { border-color: #cd7f32; color: #cd7f32; }
-        
-        .btn-iniciar { padding: 20px 60px; font-size: 4vh; background: var(--jungle-yellow); color: var(--jungle-black); border: none; cursor: pointer; font-weight: bold; margin-top: 40px; text-transform: uppercase; box-shadow: 6px 6px 0px #fff; transition: transform 0.1s; font-family: 'Arial Black'; }
-        .btn-iniciar:active { transform: translate(6px, 6px); box-shadow: none; }
-        
-        #contador-tv { font-size: 35vh; font-weight: bold; color: var(--jungle-yellow); text-shadow: 10px 10px 0px #000; display: none; animation: latido 1s infinite; line-height: 1; }
-        @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        body { background: var(--jungle-black); color: var(--jungle-yellow); font-family: 'Arial Black', sans-serif; margin: 0; overflow: hidden; }
+        #pista { width: 100vw; height: 100vh; position: relative; background: #1a1a1a; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); border-top: 5px solid var(--jungle-yellow); }
+        .carril { height: 33vh; border-bottom: 4px dashed rgba(255, 230, 0, 0.3); position: relative; display: flex; align-items: center; }
+        .bicicleta { position: absolute; left: 0; font-size: 15vh; transition: left 0.1s linear; z-index: 2; filter: drop-shadow(0 0 10px #FF3B30); }
+        .info { position: absolute; left: 20px; z-index: 10; font-size: 5vh; text-transform: uppercase; color: var(--jungle-yellow); text-shadow: 4px 4px 0 #000; }
+        .meta { position: absolute; right: 5%; top: 0; bottom: 0; width: 40px; background: repeating-linear-gradient(0deg, var(--jungle-black), var(--jungle-black) 20px, var(--jungle-yellow) 20px, var(--jungle-yellow) 40px); border-left: 5px solid #fff; }
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; }
+        .btn-iniciar { padding: 30px 60px; font-size: 5vh; background: var(--jungle-yellow); color: #000; border: none; font-weight: bold; cursor: pointer; box-shadow: 8px 8px 0 #fff; }
+        #contador-tv { font-size: 40vh; color: var(--jungle-yellow); text-shadow: 10px 10px 0 #000; display: none; }
+        .puesto { font-size: 6vh; background: #000; border: 5px solid var(--jungle-yellow); padding: 20px; margin: 10px; width: 70%; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
@@ -45,16 +22,15 @@
     </div>
 
     <div id="overlay-inicio" class="overlay" style="display: flex;">
-        <h1 id="titulo-inicio">GRAN CARRERA</h1>
-        <div id="sub-inicio" class="sub-jungle">Ingresen su nombre y elijan un equipo en el celular</div>
-        <button id="btn-arrancar" class="btn-iniciar" onclick="iniciarSecuencia()">INICIAR CARRERA</button>
+        <h1 style="font-size: 12vh; margin:0;">BIKE CHALLENGE</h1>
+        <button class="btn-iniciar" onclick="iniciarSecuencia()">EMPEZAR</button>
         <div id="contador-tv">3</div>
     </div>
 
     <div id="overlay-podio" class="overlay">
-        <div id="titulo-podio">RESULTADOS</div>
+        <h1 style="font-size: 8vh;">RESULTADOS</h1>
         <div id="lista-podio" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
-        <button class="btn-iniciar" onclick="location.reload()" style="background: #fff; color: #000; box-shadow: 6px 6px 0px var(--jungle-yellow);">NUEVA CARRERA</button>
+        <button class="btn-iniciar" onclick="location.reload()" style="font-size: 3vh;">REPETIR</button>
     </div>
 
     <script type="module">
@@ -73,179 +49,98 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const COLORES = ['#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55', '#E91E63', '#00BCD4'];
-        
-        let datosEquipos = {};
-        let anteriorClicks = {};
-        let posiciones = {};
-        let juegoActivo = false;
-        let clasificacion = []; 
-        
-        let estadoTension = false;
-        let caballoEnFoco = null;
-        let factorVelocidad = 1;
-
-        // La meta visualmente está en 95vw. 
-        // 920 = Zona de Tensión (Cámara lenta). 1000 = Meta cruzada.
-        const PUNTO_TENSION = 920; 
-        const PUNTO_META = 1000;
+        const EQUIPOS = ["DELIVER", "DEVELOP", "TRANSFORM"];
+        let datosEq = {}, anteriorClicks = {}, posiciones = {}, juegoActivo = false, clasificacion = [];
+        let factorVel = 1, enTension = false;
 
         function resetDB() {
             set(ref(db, 'estado'), 'espera');
-            set(ref(db, 'ganadorAbsoluto'), null); 
-            const inicial = {};
-            for(let i=1; i<=10; i++) {
-                inicial[i] = { clicksTotales: 0 }; 
-                posiciones[i] = 0; anteriorClicks[i] = 0;
-            }
-            set(ref(db, 'equipos'), inicial);
+            set(ref(db, 'ganadorAbsoluto'), null);
+            const ini = {};
+            EQUIPOS.forEach((_, i) => { ini[i+1] = { clicksTotales: 0 }; posiciones[i+1] = 0; anteriorClicks[i+1] = 0; });
+            set(ref(db, 'equipos'), ini);
         }
         resetDB();
 
-        onValue(ref(db, 'equipos'), (snapshot) => {
-            datosEquipos = snapshot.val() || {};
-            for(let i=1; i<=10; i++) {
-                const data = datosEquipos[i];
-                if(data && data.jugadores) {
-                    const arrayNombres = Object.values(data.jugadores);
-                    document.getElementById(`cnt-${i}`).innerText = arrayNombres.length;
-                    document.getElementById(`nom-${i}`).innerText = arrayNombres.join(', ');
-                } else {
-                    document.getElementById(`cnt-${i}`).innerText = '0';
-                    document.getElementById(`nom-${i}`).innerText = '';
-                }
-            }
-        });
+        onValue(ref(db, 'equipos'), (snap) => { datosEq = snap.val() || {}; });
 
         const pista = document.getElementById('pista');
-        for(let i=1; i<=10; i++) {
-            const carril = document.createElement('div');
-            carril.className = 'carril';
-            carril.innerHTML = `
-                <div class="info">
-                    <div class="titulo-eq" style="color: ${COLORES[i-1]}">EQ ${i} | <span id="cnt-${i}">0</span> JG</div>
-                    <div class="nombres-jugadores" id="nom-${i}"></div>
-                </div>
-                <div class="caballo" id="c-${i}" style="filter: drop-shadow(0 0 10px ${COLORES[i-1]});">🐎</div>
-            `;
-            pista.appendChild(carril);
-        }
+        EQUIPOS.forEach((nom, i) => {
+            const c = document.createElement('div');
+            c.className = 'carril';
+            c.innerHTML = `<div class="info">${nom}</div><div class="bicicleta" id="b-${i+1}">🚴</div>`;
+            pista.appendChild(c);
+        });
 
         window.iniciarSecuencia = () => {
-            document.getElementById('titulo-inicio').style.display = 'none';
-            document.getElementById('sub-inicio').style.display = 'none';
-            document.getElementById('btn-arrancar').style.display = 'none';
-            
-            const contadorTV = document.getElementById('contador-tv');
-            contadorTV.style.display = 'block';
+            document.querySelector('#overlay-inicio h1').style.display = 'none';
+            document.querySelector('.btn-iniciar').style.display = 'none';
+            const tv = document.getElementById('contador-tv'); tv.style.display = 'block';
             set(ref(db, 'estado'), 'cuenta_regresiva');
-            
-            let cuenta = 3;
-            contadorTV.innerText = cuenta;
-            
-            const intervalo = setInterval(() => {
-                cuenta--;
-                if(cuenta > 0) {
-                    contadorTV.innerText = cuenta;
-                } else {
-                    clearInterval(intervalo);
-                    contadorTV.innerText = "¡YA!";
-                    setTimeout(() => {
-                        document.getElementById('overlay-inicio').style.display = 'none';
-                        set(ref(db, 'estado'), 'carrera'); 
-                        juegoActivo = true;
-                    }, 500);
-                }
+            let num = 3;
+            const int = setInterval(() => {
+                num--; if(num>0) tv.innerText = num;
+                else { clearInterval(int); tv.innerText = "¡GO!"; setTimeout(() => { 
+                    document.getElementById('overlay-inicio').style.display = 'none';
+                    set(ref(db, 'estado'), 'carrera'); juegoActivo = true; 
+                }, 500); }
             }, 1000);
         };
 
         setInterval(() => {
             if(!juegoActivo) return;
-
-            let equiposActivos = 0;
-
-            for(let i=1; i<=10; i++) {
-                const data = datosEquipos[i];
-                const cantidadJugadores = (data && data.jugadores) ? Object.keys(data.jugadores).length : 0;
-
-                if(cantidadJugadores > 0 && !clasificacion.includes(i)) {
-                    equiposActivos++;
+            EQUIPOS.forEach((_, i) => {
+                const id = i + 1;
+                if(clasificacion.includes(id)) return;
+                const data = datosEq[id];
+                const jgs = data.jugadores ? Object.keys(data.jugadores).length : 0;
+                if(jgs > 0) {
+                    const diff = data.clicksTotales - anteriorClicks[id];
+                    posiciones[id] += (diff / jgs) * 5 * factorVel;
+                    anteriorClicks[id] = data.clicksTotales;
                     
-                    const nuevosClicks = data.clicksTotales - anteriorClicks[i];
-                    // El avance se afecta severamente si entramos en cámara lenta (factorVelocidad)
-                    const avance = (nuevosClicks / cantidadJugadores) * 5 * factorVelocidad; 
-                    
-                    posiciones[i] += avance;
-                    anteriorClicks[i] = data.clicksTotales;
+                    const el = document.getElementById(`b-${id}`);
+                    // 90% es el punto donde la bicicleta TOCARÍA la línea de meta (95vw)
+                    const visual = (posiciones[id] / 1000) * 90;
+                    el.style.left = Math.min(visual, 92) + "vw";
 
-                    // Mapeamos 1000 puntos internos a 95vw visuales
-                    const porcentajeVisual = (posiciones[i] / 1000) * 95;
-                    const el = document.getElementById(`c-${i}`);
-                    el.style.left = Math.min(porcentajeVisual, 96) + "vw";
-
-                    // 1. CONDICIÓN DE TENSIÓN: Si se acerca a la meta y no hay otro caballo en foco
-                    if (posiciones[i] >= PUNTO_TENSION && posiciones[i] < PUNTO_META && !estadoTension) {
-                        estadoTension = true;
-                        caballoEnFoco = i;
-                        factorVelocidad = 0.1; // Ralentizamos el juego un 90%
-
-                        const origenY = (i * 10) - 5; 
-                        pista.style.transformOrigin = `92vw ${origenY}vh`; 
-                        pista.style.transform = `scale(3.5) translateX(-2vw)`; 
-                        document.body.classList.add('efecto-tension');
+                    // Tensión: Al estar cerca de TOCAR (85% de la pista)
+                    if(visual >= 83 && !enTension) {
+                        enTension = true; factorVel = 0.1;
+                        pista.style.transformOrigin = `95vw ${(id * 33) - 16}vh`;
+                        pista.style.transform = "scale(2.5) translateX(-5vw)";
+                        document.body.style.filter = "saturate(2) contrast(1.2)";
                     }
 
-                    // 2. CONDICIÓN DE VICTORIA: Si cruzó la meta bajo la presión de la cámara lenta
-                    if (posiciones[i] >= PUNTO_META) {
-                        clasificacion.push(i);
-                        el.innerText = "🏁";
+                    // Victoria: Al TOCAR la línea (90% de la pista interna)
+                    if(visual >= 90) {
+                        clasificacion.push(id);
+                        el.innerText = "🚩";
+                        if(clasificacion.length === 1) set(ref(db, 'ganadorAbsoluto'), id);
+                        
+                        // Volver a la normalidad tras tocar
+                        pista.style.transform = "scale(1) translateX(0)";
+                        document.body.style.filter = "none";
+                        factorVel = 1; enTension = false;
 
-                        if (clasificacion.length === 1) {
-                            set(ref(db, 'ganadorAbsoluto'), i);
-                        }
-
-                        // Si fue el caballo al que le estábamos haciendo zoom, liberamos la cámara
-                        if (caballoEnFoco === i) {
-                            setTimeout(() => {
-                                pista.style.transform = `scale(1) translateX(0)`;
-                                document.body.classList.remove('efecto-tension');
-                                factorVelocidad = 1;
-                                estadoTension = false;
-                                caballoEnFoco = null;
-
-                                const limitePodio = Math.min(3, equiposActivos);
-                                if (clasificacion.length >= limitePodio) {
-                                    juegoActivo = false;
-                                    setTimeout(() => { set(ref(db, 'estado'), 'espera'); mostrarPodioEpic(); }, 1000);
-                                }
-                            }, 1500); // Mantenemos la toma gloriosa por 1.5s
+                        if(clasificacion.length >= Math.min(3, EQUIPOS.length)) {
+                            juegoActivo = false; setTimeout(() => mostrarPodio(), 1000);
                         }
                     }
-                }
-            }
-        }, 100);
-
-        function mostrarPodioEpic() {
-            const podioDiv = document.getElementById('overlay-podio');
-            const lista = document.getElementById('lista-podio');
-            podioDiv.style.display = 'flex';
-
-            const medallas = ['oro', 'plata', 'bronce'];
-            const nombres = ['1ER LUGAR', '2DO LUGAR', '3ER LUGAR'];
-
-            clasificacion.forEach((equipoId, index) => {
-                if(index < 3) {
-                    const item = document.createElement('div');
-                    item.className = `puesto ${medallas[index]}`;
-                    
-                    const nombresGanadores = Object.values(datosEquipos[equipoId].jugadores).join(', ');
-                    item.innerHTML = `
-                        <span>${nombres[index]}</span> 
-                        <span style="text-align: right; font-size: 2vh; line-height: 1.2;">EQUIPO ${equipoId}<br><span style="color: #ccc;">${nombresGanadores}</span></span>
-                    `;
-                    lista.appendChild(item);
                 }
             });
+        }, 100);
+
+        function mostrarPodio() {
+            set(ref(db, 'estado'), 'espera');
+            const lista = document.getElementById('lista-podio');
+            clasificacion.forEach((id, idx) => {
+                const item = document.createElement('div');
+                item.className = 'puesto';
+                item.innerHTML = `<span>#${idx+1}</span> <span>${EQUIPOS[id-1]}</span>`;
+                lista.appendChild(item);
+            });
+            document.getElementById('overlay-podio').style.display = 'flex';
         }
     </script>
 </body>
