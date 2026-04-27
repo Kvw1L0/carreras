@@ -10,7 +10,7 @@
         
         .carril { height: 33vh; border-bottom: 4px dashed rgba(255, 230, 0, 0.2); position: relative; display: flex; align-items: center; }
         
-        /* CORREGIDO: scaleX(-1) voltea la bicicleta mirando hacia la meta */
+        /* La bicicleta mira hacia la meta */
         .bicicleta { position: absolute; left: 0; font-size: 15vh; transition: left 0.1s linear; z-index: 2; filter: drop-shadow(0 0 10px #FF3B30); transform: scaleX(-1); }
         
         .info { position: absolute; left: 20px; z-index: 10; font-size: 5vh; text-transform: uppercase; color: var(--jungle-yellow); text-shadow: 4px 4px 0 #000; }
@@ -67,10 +67,8 @@
         let datosEq = {}, anteriorClicks = {}, posiciones = {}, juegoActivo = false, clasificacion = [];
         let factorVel = 1, enTension = false, biciEnFoco = null;
 
-        // FÍSICA CORREGIDA: 
-        // 1000 puntos = La bicicleta cruzó la pantalla.
-        // La bicicleta mide unos 10vw. La meta empieza en el 95vw.
-        // Para que la rueda delantera TOQUE la línea, el CSS "left" de la bici debe estar en 85vw.
+        // 1000 puntos = La rueda toca la línea de meta.
+        // La meta empieza en el 95vw. Calculamos para que visualmente bese la línea (85vw aprox del css left).
         const LIMITE_IZQUIERDO_META = 85; 
 
         function resetDB() {
@@ -130,16 +128,17 @@
                     posiciones[id] += avance;
                     anteriorClicks[id] = data.clicksTotales;
 
-                    // Mapeo: 1000 puntos internos = 85vw visuales (Toque exacto de rueda)
+                    // Mapeo: 1000 puntos = Toque exacto de rueda
                     const visualLeft = (posiciones[id] / 1000) * LIMITE_IZQUIERDO_META;
                     const el = document.getElementById(`b-${id}`);
                     el.style.left = Math.min(visualLeft, LIMITE_IZQUIERDO_META) + "vw";
 
-                    // CONDICIÓN DE TENSIÓN: Inicia al 850 (cuando la bici está a punto de tocar)
-                    if (posiciones[id] >= 850 && posiciones[id] < 1000 && !enTension) {
+                    // CONDICIÓN DE TENSIÓN CORREGIDA: 
+                    // Inicia al 940 (mucho más cerca de la meta) y baja la velocidad al 30% en vez del 10%
+                    if (posiciones[id] >= 940 && posiciones[id] < 1000 && !enTension) {
                         enTension = true;
                         biciEnFoco = id;
-                        factorVel = 0.1; // Se reduce velocidad al 10%
+                        factorVel = 0.3; // Tensión equilibrada, jugable pero dramática
 
                         const origenY = (id * 33) - 16; 
                         pista.style.transformOrigin = `95vw ${origenY}vh`; 
@@ -147,10 +146,9 @@
                         document.body.classList.add('efecto-tension');
                     }
 
-                    // CONDICIÓN VICTORIA: Llega a los 1000 (Rueda delantera besando la línea)
+                    // CONDICIÓN VICTORIA: Llega a los 1000 (Rueda delantera toca la línea)
                     if (posiciones[id] >= 1000) {
                         clasificacion.push(id);
-                        // Reemplazamos bici por bandera manteniéndolo centrado
                         el.style.transform = "scaleX(1)"; 
                         el.innerText = "🚩";
 
