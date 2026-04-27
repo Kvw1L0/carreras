@@ -1,50 +1,55 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Jungle TV Carrera</title>
+    <title>Santander TV Carrera</title>
     <style>
-        :root { --jungle-yellow: #FFE600; --jungle-black: #111111; }
-        body { background: var(--jungle-black); color: var(--jungle-yellow); font-family: 'Arial Black', sans-serif; margin: 0; overflow: hidden; transition: filter 1s ease-out; }
+        :root { --neon-red: #EC0000; --dark-bg: #050505; }
+        body { background: var(--dark-bg); color: #fff; font-family: 'Arial Black', sans-serif; margin: 0; overflow: hidden; transition: filter 1s ease-out; }
         
-        #pista { width: 100vw; height: 100vh; position: relative; background: #1a1a1a; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); will-change: transform; border-top: 5px solid var(--jungle-yellow); border-bottom: 5px solid var(--jungle-yellow); box-sizing: border-box; }
+        /* Fondo con pista.png */
+        #pista-container { width: 100vw; height: 100vh; position: relative; background: url('pista.png') center center / cover no-repeat; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); will-change: transform; }
         
-        .carril { height: 33vh; border-bottom: 4px dashed rgba(255, 230, 0, 0.2); position: relative; display: flex; align-items: center; }
+        /* Contenedor central (60% de la altura) para aislar las bicis del público */
+        #zona-carriles { position: absolute; top: 20vh; left: 0; width: 100vw; height: 60vh; display: flex; flex-direction: column; }
+        .carril { flex: 1; border-bottom: 2px dashed rgba(236, 0, 0, 0.2); position: relative; display: flex; align-items: center; }
         
-        /* La bicicleta mira hacia la meta */
-        .bicicleta { position: absolute; left: 0; font-size: 15vh; transition: left 0.1s linear; z-index: 2; filter: drop-shadow(0 0 10px #FF3B30); transform: scaleX(-1); }
+        .bicicleta { position: absolute; left: 0; font-size: 12vh; transition: left 0.1s linear; z-index: 2; filter: drop-shadow(0 0 15px var(--neon-red)); transform: scaleX(-1); }
+        .info { position: absolute; left: 20px; z-index: 10; font-size: 4vh; text-transform: uppercase; color: #fff; text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000; letter-spacing: 2px; }
         
-        .info { position: absolute; left: 20px; z-index: 10; font-size: 5vh; text-transform: uppercase; color: var(--jungle-yellow); text-shadow: 4px 4px 0 #000; }
-        
-        /* La meta empieza en el 95vw de la pantalla */
-        .meta { position: absolute; left: 95vw; top: 0; bottom: 0; width: 40px; background: repeating-linear-gradient(0deg, var(--jungle-black), var(--jungle-black) 20px, var(--jungle-yellow) 20px, var(--jungle-yellow) 40px); z-index: 0; border-left: 5px solid #fff; }
+        /* Línea de meta Láser Neón en el 90vw */
+        .meta { position: absolute; left: 90vw; top: 0; bottom: 0; width: 4px; background: #fff; box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 0; }
 
-        .efecto-tension { filter: saturate(2) contrast(1.5) brightness(0.6); }
+        .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.8); }
 
-        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; }
-        #titulo-inicio { font-size: 12vh; margin:0; color: var(--jungle-yellow); text-shadow: 5px 5px 0px #000; text-transform: uppercase; }
-        .btn-iniciar { padding: 20px 60px; font-size: 4vh; background: var(--jungle-yellow); color: var(--jungle-black); border: none; cursor: pointer; font-weight: bold; margin-top: 40px; text-transform: uppercase; box-shadow: 6px 6px 0px #fff; font-family: 'Arial Black'; }
+        .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
+        #titulo-inicio { font-size: 10vh; margin:0; color: #fff; text-shadow: 0 0 20px var(--neon-red); text-transform: uppercase; letter-spacing: 5px; }
         
-        #contador-tv { font-size: 35vh; font-weight: bold; color: var(--jungle-yellow); text-shadow: 10px 10px 0px #000; display: none; animation: latido 1s infinite; line-height: 1; }
+        .btn-iniciar { padding: 20px 60px; font-size: 3vh; background: transparent; color: #fff; border: 3px solid var(--neon-red); cursor: pointer; font-weight: bold; margin-top: 40px; text-transform: uppercase; box-shadow: inset 0 0 15px rgba(236,0,0,0.5), 0 0 20px rgba(236,0,0,0.5); font-family: 'Arial Black'; letter-spacing: 2px; transition: background 0.3s; }
+        .btn-iniciar:hover { background: var(--neon-red); }
+        
+        #contador-tv { font-size: 35vh; font-weight: bold; color: #fff; text-shadow: 0 0 50px var(--neon-red); display: none; animation: latido 1s infinite; line-height: 1; }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        .puesto { font-size: 4vh; margin: 10px; padding: 15px 40px; background: var(--jungle-black); border: 4px solid var(--jungle-yellow); width: 60%; display: flex; justify-content: space-between; color: white; text-transform: uppercase; align-items: center; }
+        .puesto { font-size: 4vh; margin: 10px; padding: 15px 40px; background: rgba(236,0,0,0.1); border: 2px solid var(--neon-red); width: 60%; display: flex; justify-content: space-between; color: white; text-transform: uppercase; align-items: center; box-shadow: 0 0 15px rgba(236,0,0,0.3); }
     </style>
 </head>
 <body>
-    <div id="pista">
-        <div class="meta"></div>
+    <div id="pista-container">
+        <div id="zona-carriles">
+            <div class="meta"></div>
+        </div>
     </div>
 
     <div id="overlay-inicio" class="overlay" style="display: flex;">
         <h1 id="titulo-inicio">BIKE CHALLENGE</h1>
-        <button id="btn-arrancar" class="btn-iniciar" onclick="iniciarSecuencia()">EMPEZAR</button>
+        <button id="btn-arrancar" class="btn-iniciar" onclick="iniciarSecuencia()">INICIAR CARRERA</button>
         <div id="contador-tv">3</div>
     </div>
 
     <div id="overlay-podio" class="overlay">
-        <h1 style="font-size: 9vh; color: var(--jungle-yellow); text-shadow: 5px 5px 0px #000;">RESULTADOS</h1>
+        <h1 style="font-size: 8vh; color: #fff; text-shadow: 0 0 20px var(--neon-red);">RESULTADOS</h1>
         <div id="lista-podio" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
-        <button class="btn-iniciar" onclick="location.reload()" style="background: #fff; box-shadow: 6px 6px 0px var(--jungle-yellow);">NUEVA CARRERA</button>
+        <button class="btn-iniciar" onclick="location.reload()">NUEVA CARRERA</button>
     </div>
 
     <script type="module">
@@ -64,12 +69,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const EQUIPOS = ["DELIVER", "DEVELOP", "TRANSFORM"];
-        let datosEq = {}, anteriorClicks = {}, posiciones = {}, juegoActivo = false, clasificacion = [];
-        let factorVel = 1, enTension = false, biciEnFoco = null;
+        let datosEq = {}, anteriorClicks = {}, posiciones = {};
+        let juegoActivo = false, clasificacion = [];
+        let factorVel = 1, enTension = false;
 
-        // 1000 puntos = La rueda toca la línea de meta.
-        // La meta empieza en el 95vw. Calculamos para que visualmente bese la línea (85vw aprox del css left).
-        const LIMITE_IZQUIERDO_META = 85; 
+        const LIMITE_IZQUIERDO_META = 90; 
 
         function resetDB() {
             set(ref(db, 'estado'), 'espera');
@@ -82,7 +86,7 @@
 
         onValue(ref(db, 'equipos'), (snap) => { datosEq = snap.val() || {}; });
 
-        const pista = document.getElementById('pista');
+        const zonaCarriles = document.getElementById('zona-carriles');
         EQUIPOS.forEach((nombre, i) => {
             const carril = document.createElement('div');
             carril.className = 'carril';
@@ -90,7 +94,7 @@
                 <div class="info">${nombre}</div>
                 <div class="bicicleta" id="b-${i+1}">🚴</div>
             `;
-            pista.appendChild(carril);
+            zonaCarriles.appendChild(carril);
         });
 
         window.iniciarSecuencia = () => {
@@ -102,7 +106,7 @@
             let num = 3; tv.innerText = num;
             const int = setInterval(() => {
                 num--; if(num>0) tv.innerText = num;
-                else { clearInterval(int); tv.innerText = "¡GO!"; setTimeout(() => { 
+                else { clearInterval(int); tv.innerText = "GO!"; setTimeout(() => { 
                     document.getElementById('overlay-inicio').style.display = 'none';
                     set(ref(db, 'estado'), 'carrera'); juegoActivo = true; 
                 }, 500); }
@@ -113,6 +117,7 @@
             if(!juegoActivo) return;
 
             let equiposActivos = 0;
+            let equiposEnZonaTension = []; // Array para Multi-Focus
 
             EQUIPOS.forEach((_, i) => {
                 const id = i + 1;
@@ -128,49 +133,62 @@
                     posiciones[id] += avance;
                     anteriorClicks[id] = data.clicksTotales;
 
-                    // Mapeo: 1000 puntos = Toque exacto de rueda
                     const visualLeft = (posiciones[id] / 1000) * LIMITE_IZQUIERDO_META;
                     const el = document.getElementById(`b-${id}`);
-                    el.style.left = Math.min(visualLeft, LIMITE_IZQUIERDO_META) + "vw";
+                    el.style.left = Math.min(visualLeft, 92) + "vw";
 
-                    // CONDICIÓN DE TENSIÓN CORREGIDA: 
-                    // Inicia al 940 (mucho más cerca de la meta) y baja la velocidad al 30% en vez del 10%
-                    if (posiciones[id] >= 940 && posiciones[id] < 1000 && !enTension) {
-                        enTension = true;
-                        biciEnFoco = id;
-                        factorVel = 0.3; // Tensión equilibrada, jugable pero dramática
-
-                        const origenY = (id * 33) - 16; 
-                        pista.style.transformOrigin = `95vw ${origenY}vh`; 
-                        pista.style.transform = `scale(3.5) translateX(-5vw)`; 
-                        document.body.classList.add('efecto-tension');
+                    // Registrar bicicletas en la zona crítica (Punto 930)
+                    if (posiciones[id] >= 930 && posiciones[id] < 1000) {
+                        equiposEnZonaTension.push(id);
                     }
 
-                    // CONDICIÓN VICTORIA: Llega a los 1000 (Rueda delantera toca la línea)
                     if (posiciones[id] >= 1000) {
                         clasificacion.push(id);
                         el.style.transform = "scaleX(1)"; 
                         el.innerText = "🚩";
+                        el.style.filter = "drop-shadow(0 0 20px #fff)"; // Brillo blanco al ganar
 
                         if (clasificacion.length === 1) set(ref(db, 'ganadorAbsoluto'), id);
 
-                        if (biciEnFoco === id) {
-                            setTimeout(() => {
-                                pista.style.transform = `scale(1) translateX(0)`;
+                        if (clasificacion.length >= Math.min(3, equiposActivos)) {
+                            juegoActivo = false;
+                            setTimeout(() => { 
+                                document.getElementById('pista-container').style.transform = `scale(1) translateX(0)`;
                                 document.body.classList.remove('efecto-tension');
-                                factorVel = 1;
-                                enTension = false;
-                                biciEnFoco = null;
-
-                                if (clasificacion.length >= Math.min(3, equiposActivos)) {
-                                    juegoActivo = false;
-                                    setTimeout(() => { set(ref(db, 'estado'), 'espera'); mostrarPodioEpic(); }, 1000);
-                                }
+                                set(ref(db, 'estado'), 'espera'); 
+                                mostrarPodioEpic(); 
                             }, 1500);
                         }
                     }
                 }
             });
+
+            // LÓGICA DE MULTI-FOCUS ZOOM
+            const contenedor = document.getElementById('pista-container');
+            
+            if (equiposEnZonaTension.length > 0 && !enTension && clasificacion.length === 0) {
+                enTension = true;
+                factorVel = 0.3;
+                document.body.classList.add('efecto-tension');
+                
+                if (equiposEnZonaTension.length === 1) {
+                    // Solo 1 bici: Zoom extremo hacia ella
+                    const idLider = equiposEnZonaTension[0];
+                    const origenY = 20 + ((idLider - 1) * 20) + 10; // (20vh margen superior + carril + centro)
+                    contenedor.style.transformOrigin = `90vw ${origenY}vh`; 
+                    contenedor.style.transform = `scale(3.5) translateX(-2vw)`; 
+                } else {
+                    // Más de 1 bici peleando: Zoom intermedio centrado en la pista
+                    contenedor.style.transformOrigin = `85vw 50vh`; // Centro vertical de la pantalla
+                    contenedor.style.transform = `scale(2) translateX(-5vw)`; 
+                }
+            } else if (equiposEnZonaTension.length === 0 && clasificacion.length > 0 && enTension) {
+                 // Si alguien cruzó y nadie más está en tensión, soltamos la cámara
+                 contenedor.style.transform = `scale(1) translateX(0)`;
+                 document.body.classList.remove('efecto-tension');
+                 factorVel = 1;
+                 enTension = false;
+            }
         }, 100);
 
         function mostrarPodioEpic() {
@@ -182,7 +200,7 @@
                 if(idx < 3) {
                     const item = document.createElement('div');
                     item.className = 'puesto';
-                    item.innerHTML = `<span style="color: gold;">#${idx+1}</span> <span>${EQUIPOS[id-1]}</span>`;
+                    item.innerHTML = `<span style="color: #fff; text-shadow: 0 0 10px var(--neon-red);">#${idx+1}</span> <span>${EQUIPOS[id-1]}</span>`;
                     lista.appendChild(item);
                 }
             });
