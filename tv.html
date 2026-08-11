@@ -1,36 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Santander TV Carrera</title>
+    <title>Music Legends Sprint - TV</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
         :root { --neon-red: #EC0000; --dark-bg: #050505; }
         body { background: var(--dark-bg); color: #fff; font-family: 'Arial Black', sans-serif; margin: 0; overflow: hidden; transition: filter 1s ease-out; }
         
-        /* Fondo con pista.png */
-        #pista-container { width: 100vw; height: 100vh; position: relative; background: url('pista.png') center center / cover no-repeat; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); will-change: transform; }
+        /* Escenografía */
+        #pista-container { width: 100vw; height: 100vh; position: relative; background: url('pista.png') center center / cover no-repeat; background-color: #111; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); will-change: transform; }
         
-        /* Contenedor central (60% de la altura) para aislar las bicis del público */
-        #zona-carriles { position: absolute; top: 20vh; left: 0; width: 100vw; height: 60vh; display: flex; flex-direction: column; }
-        .carril { flex: 1; border-bottom: 2px dashed rgba(236, 0, 0, 0.2); position: relative; display: flex; align-items: center; }
+        #zona-carriles { position: absolute; top: 15vh; left: 0; width: 100vw; height: 70vh; display: flex; flex-direction: column; }
+        .carril { flex: 1; border-bottom: 2px dashed rgba(255, 255, 255, 0.1); position: relative; display: flex; align-items: center; }
         
-        .bicicleta { position: absolute; left: 0; font-size: 12vh; transition: left 0.1s linear; z-index: 2; filter: drop-shadow(0 0 15px var(--neon-red)); transform: scaleX(-1); }
-        .info { position: absolute; left: 20px; z-index: 10; font-size: 4vh; text-transform: uppercase; color: #fff; text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000; letter-spacing: 2px; }
+        /* Personajes 8-bit */
+        .personaje { position: absolute; left: 0; height: 100%; transition: left 0.1s linear; z-index: 2; filter: drop-shadow(0 0 10px rgba(236,0,0,0.5)); display: flex; align-items: center;}
+        .personaje img { height: 90%; max-height: 12vh; display: block; } /* Ajustar según tu GIF */
         
-        /* Línea de meta Láser Neón en el 90vw */
-        .meta { position: absolute; left: 90vw; top: 0; bottom: 0; width: 4px; background: #fff; box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 0; }
+        .info { position: absolute; left: 20px; z-index: 10; font-size: 2.5vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 2px 2px 0 #000, 0 0 10px var(--neon-red); }
+        
+        .meta { position: absolute; left: 90vw; top: 0; bottom: 0; width: 6px; background: #fff; box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 0; }
 
         .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.8); }
 
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
-        #titulo-inicio { font-size: 10vh; margin:0; color: #fff; text-shadow: 0 0 20px var(--neon-red); text-transform: uppercase; letter-spacing: 5px; }
+        #titulo-inicio { font-size: 8vh; font-family: 'Press Start 2P', cursive; margin:0; color: #fff; text-shadow: 0 0 20px var(--neon-red); line-height: 1.3;}
         
-        .btn-iniciar { padding: 20px 60px; font-size: 3vh; background: transparent; color: #fff; border: 3px solid var(--neon-red); cursor: pointer; font-weight: bold; margin-top: 40px; text-transform: uppercase; box-shadow: inset 0 0 15px rgba(236,0,0,0.5), 0 0 20px rgba(236,0,0,0.5); font-family: 'Arial Black'; letter-spacing: 2px; transition: background 0.3s; }
+        .btn-iniciar { padding: 20px 60px; font-size: 3vh; font-family: 'Press Start 2P', cursive; background: transparent; color: #fff; border: 3px solid var(--neon-red); cursor: pointer; margin-top: 40px; box-shadow: inset 0 0 15px rgba(236,0,0,0.5), 0 0 20px rgba(236,0,0,0.5); transition: background 0.3s; }
         .btn-iniciar:hover { background: var(--neon-red); }
         
-        #contador-tv { font-size: 35vh; font-weight: bold; color: #fff; text-shadow: 0 0 50px var(--neon-red); display: none; animation: latido 1s infinite; line-height: 1; }
+        #contador-tv { font-size: 30vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 50px var(--neon-red); display: none; animation: latido 1s infinite; line-height: 1; }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        .puesto { font-size: 4vh; margin: 10px; padding: 15px 40px; background: rgba(236,0,0,0.1); border: 2px solid var(--neon-red); width: 60%; display: flex; justify-content: space-between; color: white; text-transform: uppercase; align-items: center; box-shadow: 0 0 15px rgba(236,0,0,0.3); }
+        /* Estilos Ruleta Digital */
+        #overlay-ruleta { background: rgba(5, 5, 5, 0.95); z-index: 105; }
+        #titulo-ruleta { color: #fff; font-size: 4vh; font-family: 'Press Start 2P', cursive; margin-bottom: 40px; }
+        #nombre-ruleta { font-size: 12vh; font-family: 'Press Start 2P', cursive; color: #fff; text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); transition: all 0.1s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
+        .ruleta-girando { opacity: 0.8; transform: scale(0.98); }
+        .ruleta-ganador { color: var(--neon-red) !important; text-shadow: 0 0 40px var(--neon-red), 0 0 80px var(--neon-red) !important; animation: impactoGanador 0.5s ease-out forwards; }
+        @keyframes impactoGanador { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1.05); } }
+
+        .puesto { font-size: 3vh; font-family: 'Press Start 2P', cursive; margin: 15px; padding: 20px 40px; background: rgba(236,0,0,0.1); border: 2px solid var(--neon-red); width: 70%; display: flex; justify-content: space-between; color: white; align-items: center; box-shadow: 0 0 15px rgba(236,0,0,0.3); }
     </style>
 </head>
 <body>
@@ -41,15 +52,20 @@
     </div>
 
     <div id="overlay-inicio" class="overlay" style="display: flex;">
-        <h1 id="titulo-inicio">BIKE CHALLENGE</h1>
-        <button id="btn-arrancar" class="btn-iniciar" onclick="iniciarSecuencia()">INICIAR CARRERA</button>
+        <h1 id="titulo-inicio">LEGENDS<br>SPRINT</h1>
+        <button id="btn-arrancar" class="btn-iniciar" onclick="iniciarSecuencia()">INSERT COIN</button>
         <div id="contador-tv">3</div>
     </div>
 
+    <div id="overlay-ruleta" class="overlay">
+        <h2 id="titulo-ruleta">RANDOM WINNER</h2>
+        <div id="nombre-ruleta">BUSCANDO...</div>
+    </div>
+
     <div id="overlay-podio" class="overlay">
-        <h1 style="font-size: 8vh; color: #fff; text-shadow: 0 0 20px var(--neon-red);">RESULTADOS</h1>
+        <h1 style="font-size: 6vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 20px var(--neon-red); margin-bottom: 40px;">RESULTADOS</h1>
         <div id="lista-podio" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
-        <button class="btn-iniciar" onclick="location.reload()">NUEVA CARRERA</button>
+        <button class="btn-iniciar" onclick="location.reload()">PLAY AGAIN</button>
     </div>
 
     <script type="module">
@@ -68,18 +84,32 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const EQUIPOS = ["DELIVER", "DEVELOP", "TRANSFORM"];
+        
+        // Estructura de 5 equipos con sus assets
+        const EQUIPOS = [
+            { id: 1, nombre: "M. JACKSON", asset: "jackson.gif" },
+            { id: 2, nombre: "F. MERCURY", asset: "mercury.gif" },
+            { id: 3, nombre: "G. CERATI", asset: "cerati.gif" },
+            { id: 4, nombre: "D. BOWIE", asset: "bowie.gif" },
+            { id: 5, nombre: "E. PRESLEY", asset: "elvis.gif" }
+        ];
+
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
+        let snapshotJugadores = {}; // Para la "matemática justa"
         let juegoActivo = false, clasificacion = [];
         let factorVel = 1, enTension = false;
-
         const LIMITE_IZQUIERDO_META = 90; 
 
         function resetDB() {
             set(ref(db, 'estado'), 'espera');
             set(ref(db, 'ganadorAbsoluto'), null); 
             const inicial = {};
-            EQUIPOS.forEach((_, i) => { inicial[i+1] = { clicksTotales: 0 }; posiciones[i+1] = 0; anteriorClicks[i+1] = 0; });
+            EQUIPOS.forEach(eq => { 
+                inicial[eq.id] = { clicksTotales: 0 }; 
+                posiciones[eq.id] = 0; 
+                anteriorClicks[eq.id] = 0; 
+                snapshotJugadores[eq.id] = 0;
+            });
             set(ref(db, 'equipos'), inicial);
         }
         resetDB();
@@ -87,12 +117,14 @@
         onValue(ref(db, 'equipos'), (snap) => { datosEq = snap.val() || {}; });
 
         const zonaCarriles = document.getElementById('zona-carriles');
-        EQUIPOS.forEach((nombre, i) => {
+        EQUIPOS.forEach((eq) => {
             const carril = document.createElement('div');
             carril.className = 'carril';
             carril.innerHTML = `
-                <div class="info">${nombre}</div>
-                <div class="bicicleta" id="b-${i+1}">🚴</div>
+                <div class="info">${eq.nombre}</div>
+                <div class="personaje" id="p-${eq.id}">
+                    <img src="${eq.asset}" alt="${eq.nombre}">
+                </div>
             `;
             zonaCarriles.appendChild(carril);
         });
@@ -106,88 +138,128 @@
             let num = 3; tv.innerText = num;
             const int = setInterval(() => {
                 num--; if(num>0) tv.innerText = num;
-                else { clearInterval(int); tv.innerText = "GO!"; setTimeout(() => { 
-                    document.getElementById('overlay-inicio').style.display = 'none';
-                    set(ref(db, 'estado'), 'carrera'); juegoActivo = true; 
-                }, 500); }
+                else { 
+                    clearInterval(int); 
+                    tv.innerText = "GO!"; 
+                    
+                    // Tomamos el snapshot congelado de jugadores al iniciar
+                    EQUIPOS.forEach(eq => {
+                        const data = datosEq[eq.id];
+                        snapshotJugadores[eq.id] = (data && data.jugadores) ? Object.keys(data.jugadores).length : 0;
+                    });
+
+                    setTimeout(() => { 
+                        document.getElementById('overlay-inicio').style.display = 'none';
+                        set(ref(db, 'estado'), 'carrera'); 
+                        juegoActivo = true; 
+                    }, 500); 
+                }
             }, 1000);
         };
+
+        function ejecutarRuletaDigital(idEquipoGanador) {
+            const overlayRuleta = document.getElementById('overlay-ruleta');
+            const displayNombre = document.getElementById('nombre-ruleta');
+            overlayRuleta.style.display = 'flex';
+            
+            const equipoData = datosEq[idEquipoGanador];
+            let nombres = ["GHOST"]; 
+            if (equipoData && equipoData.jugadores) {
+                nombres = Object.values(equipoData.jugadores);
+            }
+            
+            let tiempo = 0;
+            const tiempoMaximo = 3500; 
+            const velocidadCambio = 60; 
+            
+            displayNombre.classList.add('ruleta-girando');
+            
+            const intervaloRuleta = setInterval(() => {
+                const indiceAleatorio = Math.floor(Math.random() * nombres.length);
+                displayNombre.innerText = nombres[indiceAleatorio];
+                tiempo += velocidadCambio;
+                
+                if (tiempo >= tiempoMaximo) {
+                    clearInterval(intervaloRuleta);
+                    const ganadorDefinitivo = nombres[Math.floor(Math.random() * nombres.length)];
+                    displayNombre.innerText = ganadorDefinitivo;
+                    
+                    displayNombre.classList.remove('ruleta-girando');
+                    displayNombre.classList.add('ruleta-ganador');
+                    
+                    setTimeout(() => {
+                        overlayRuleta.style.display = 'none';
+                        mostrarPodioEpic(); 
+                    }, 4000);
+                }
+            }, velocidadCambio);
+        }
 
         setInterval(() => {
             if(!juegoActivo) return;
 
-            let equiposActivos = 0;
-            let equiposEnZonaTension = []; // Array para Multi-Focus
+            let equiposEnZonaTension = []; 
 
-            EQUIPOS.forEach((_, i) => {
-                const id = i + 1;
+            EQUIPOS.forEach((eq) => {
+                const id = eq.id;
                 const data = datosEq[id];
-                const jgs = data && data.jugadores ? Object.keys(data.jugadores).length : 0;
+                // Usamos el snapshot congelado de jugadores, no el tiempo real
+                const jgsActivos = snapshotJugadores[id];
 
-                if(jgs > 0 && !clasificacion.includes(id)) {
-                    equiposActivos++;
-                    
+                if(jgsActivos > 0 && !clasificacion.includes(id)) {
                     const nuevosClicks = data.clicksTotales - anteriorClicks[id];
-                    const avance = (nuevosClicks / jgs) * 5 * factorVel; 
+                    // Cálculo matemático justo
+                    const avance = (nuevosClicks / jgsActivos) * 5 * factorVel; 
                     
                     posiciones[id] += avance;
                     anteriorClicks[id] = data.clicksTotales;
 
                     const visualLeft = (posiciones[id] / 1000) * LIMITE_IZQUIERDO_META;
-                    const el = document.getElementById(`b-${id}`);
+                    const el = document.getElementById(`p-${id}`);
                     el.style.left = Math.min(visualLeft, 92) + "vw";
 
-                    // Registrar bicicletas en la zona crítica (Punto 930)
                     if (posiciones[id] >= 930 && posiciones[id] < 1000) {
                         equiposEnZonaTension.push(id);
                     }
 
                     if (posiciones[id] >= 1000) {
                         clasificacion.push(id);
-                        el.style.transform = "scaleX(1)"; 
-                        el.innerText = "🚩";
-                        el.style.filter = "drop-shadow(0 0 20px #fff)"; // Brillo blanco al ganar
+                        el.style.filter = "drop-shadow(0 0 20px #fff)"; 
 
-                        if (clasificacion.length === 1) set(ref(db, 'ganadorAbsoluto'), id);
-
-                        if (clasificacion.length >= Math.min(3, equiposActivos)) {
-                            juegoActivo = false;
-                            setTimeout(() => { 
+                        // Si es el PRIMERO en cruzar la meta
+                        if (clasificacion.length === 1) {
+                            set(ref(db, 'ganadorAbsoluto'), id);
+                            juegoActivo = false; // Detenemos la carrera
+                            
+                            setTimeout(() => {
                                 document.getElementById('pista-container').style.transform = `scale(1) translateX(0)`;
                                 document.body.classList.remove('efecto-tension');
                                 set(ref(db, 'estado'), 'espera'); 
-                                mostrarPodioEpic(); 
-                            }, 1500);
+                                ejecutarRuletaDigital(id); // Lanzamos la ruleta
+                            }, 1000);
                         }
                     }
                 }
             });
 
-            // LÓGICA DE MULTI-FOCUS ZOOM
+            // MULTI-FOCUS ZOOM (Se mantiene igual, enfoca al pelear la meta)
             const contenedor = document.getElementById('pista-container');
-            
             if (equiposEnZonaTension.length > 0 && !enTension && clasificacion.length === 0) {
-                enTension = true;
-                factorVel = 0.3;
+                enTension = true; factorVel = 0.3;
                 document.body.classList.add('efecto-tension');
-                
                 if (equiposEnZonaTension.length === 1) {
-                    // Solo 1 bici: Zoom extremo hacia ella
                     const idLider = equiposEnZonaTension[0];
-                    const origenY = 20 + ((idLider - 1) * 20) + 10; // (20vh margen superior + carril + centro)
+                    const origenY = 15 + ((idLider - 1) * 14) + 7; 
                     contenedor.style.transformOrigin = `90vw ${origenY}vh`; 
-                    contenedor.style.transform = `scale(3.5) translateX(-2vw)`; 
+                    contenedor.style.transform = `scale(3) translateX(-2vw)`; 
                 } else {
-                    // Más de 1 bici peleando: Zoom intermedio centrado en la pista
-                    contenedor.style.transformOrigin = `85vw 50vh`; // Centro vertical de la pantalla
+                    contenedor.style.transformOrigin = `85vw 50vh`; 
                     contenedor.style.transform = `scale(2) translateX(-5vw)`; 
                 }
             } else if (equiposEnZonaTension.length === 0 && clasificacion.length > 0 && enTension) {
-                 // Si alguien cruzó y nadie más está en tensión, soltamos la cámara
                  contenedor.style.transform = `scale(1) translateX(0)`;
                  document.body.classList.remove('efecto-tension');
-                 factorVel = 1;
-                 enTension = false;
+                 factorVel = 1; enTension = false;
             }
         }, 100);
 
@@ -200,7 +272,8 @@
                 if(idx < 3) {
                     const item = document.createElement('div');
                     item.className = 'puesto';
-                    item.innerHTML = `<span style="color: #fff; text-shadow: 0 0 10px var(--neon-red);">#${idx+1}</span> <span>${EQUIPOS[id-1]}</span>`;
+                    const nombreEq = EQUIPOS.find(e => e.id === id).nombre;
+                    item.innerHTML = `<span style="color: #fff; text-shadow: 0 0 10px var(--neon-red);">#${idx+1}</span> <span>${nombreEq}</span>`;
                     lista.appendChild(item);
                 }
             });

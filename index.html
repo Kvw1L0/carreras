@@ -1,44 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Santander Bike Challenge</title>
+    <title>Music Legends Sprint - Controller</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
         :root { --neon-red: #EC0000; --dark-bg: #0a0a0a; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Arial Black', sans-serif; color: #fff; overflow: hidden; touch-action: none; background: var(--dark-bg); }
         
-        /* Fondo global */
         .con-fondo { background: url('fondo.png') center center / cover no-repeat; background-color: var(--dark-bg); }
 
-        /* Estilo Glassmorphism Futurista */
         .panel-glass { background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(10px); border: 2px solid var(--neon-red); box-shadow: 0 0 20px rgba(236, 0, 0, 0.5); border-radius: 15px; padding: 30px; width: 85%; max-width: 400px; text-align: center; }
 
         .pantalla { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: center; align-items: center; box-sizing: border-box; position: absolute; top: 0; left: 0; }
         .activa { display: flex; animation: aparecer 0.3s ease-out; }
         @keyframes aparecer { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { margin-top: 0; margin-bottom: 25px; font-size: 26px; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px var(--neon-red); }
+        h2 { margin-top: 0; margin-bottom: 25px; font-size: 20px; font-family: 'Press Start 2P', cursive; text-transform: uppercase; line-height: 1.5; color: #fff; text-shadow: 0 0 10px var(--neon-red); }
         
         input { padding: 15px; font-size: 20px; border: 2px solid #333; border-radius: 8px; width: 80%; text-align: center; font-weight: bold; margin-bottom: 20px; outline: none; background: rgba(0,0,0,0.5); color: #fff; text-transform: uppercase; transition: border 0.3s, box-shadow 0.3s; }
         input:focus { border-color: var(--neon-red); box-shadow: 0 0 15px var(--neon-red); }
         
-        .btn-accion { padding: 15px 40px; font-size: 20px; border: none; background: var(--neon-red); color: #fff; font-weight: bold; cursor: pointer; border-radius: 8px; width: 90%; text-transform: uppercase; box-shadow: 0 0 15px var(--neon-red); letter-spacing: 1px; transition: transform 0.1s; }
+        .btn-accion { padding: 15px 40px; font-size: 16px; font-family: 'Press Start 2P', cursive; border: none; background: var(--neon-red); color: #fff; cursor: pointer; border-radius: 8px; width: 90%; text-transform: uppercase; box-shadow: 0 0 15px var(--neon-red); transition: transform 0.1s; margin-top: 10px;}
         .btn-accion:active { transform: scale(0.95); }
-
-        .grid { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }
-        .btn-equipo { padding: 20px; font-size: 20px; border: 2px solid var(--neon-red); border-radius: 8px; color: white; font-weight: bold; cursor: pointer; background: transparent; text-transform: uppercase; font-family: 'Arial Black'; transition: all 0.3s; box-shadow: inset 0 0 10px rgba(236,0,0,0.2); }
-        .btn-equipo:hover, .btn-equipo:active { background: var(--neon-red); box-shadow: 0 0 20px var(--neon-red); }
 
         /* Pantalla de Espera e Instrucciones */
         #bloque-instrucciones { margin-bottom: 20px; }
-        #contador-gigante { font-size: 120px; font-weight: bold; color: var(--neon-red); text-shadow: 0 0 30px var(--neon-red); display: none; }
+        #contador-gigante { font-size: 80px; font-family: 'Press Start 2P', cursive; color: var(--neon-red); text-shadow: 0 0 30px var(--neon-red); display: none; margin-top: 20px;}
 
         /* Pantalla de Juego (Tap) */
         #zona-tap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; border: 8px solid var(--neon-red); box-sizing: border-box; background: rgba(236, 0, 0, 0.15); backdrop-filter: blur(5px); }
-        #mensaje-tap { font-size: 45px; font-weight: bold; text-align: center; color: white; text-shadow: 0 0 20px var(--neon-red), 2px 2px 0 #000; pointer-events: none; text-transform: uppercase; line-height: 1.1; z-index: 10; animation: pulso 1s infinite alternate; }
+        #mensaje-tap { font-size: 30px; font-family: 'Press Start 2P', cursive; text-align: center; color: white; text-shadow: 0 0 20px var(--neon-red), 2px 2px 0 #000; pointer-events: none; line-height: 1.5; z-index: 10; animation: pulso 1s infinite alternate; }
         @keyframes pulso { from { transform: scale(1); } to { transform: scale(1.05); } }
         
-        .flotante { position: absolute; color: #fff; font-weight: bold; pointer-events: none; animation: subir 0.4s ease-out forwards; text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000; }
+        .flotante { position: absolute; color: #fff; font-family: 'Press Start 2P', cursive; pointer-events: none; animation: subir 0.4s ease-out forwards; text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000; }
         @keyframes subir { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
         
         .victoria { animation: flashNeon 0.3s infinite linear !important; }
@@ -50,25 +46,18 @@
 
     <div id="pantalla-nombre" class="pantalla activa">
         <div class="panel-glass">
-            <h2>Ingresa tu nombre</h2>
+            <h2>PLAYER 1<br>INSERT NAME</h2>
             <input type="text" id="input-nombre" placeholder="TU NOMBRE..." maxlength="12" autocomplete="off">
-            <button class="btn-accion" onclick="guardarNombre()">CONTINUAR</button>
-        </div>
-    </div>
-
-    <div id="pantalla-seleccion" class="pantalla">
-        <div class="panel-glass" style="padding: 20px;">
-            <h2 style="margin-bottom: 15px;">ELIGE TU EQUIPO</h2>
-            <div class="grid" id="lista-equipos"></div>
+            <button class="btn-accion" onclick="guardarNombre()">START</button>
         </div>
     </div>
 
     <div id="popup-instrucciones" class="pantalla">
         <div class="panel-glass">
             <div id="bloque-instrucciones">
-                <h1 style="color: var(--neon-red); font-size: 32px; margin-top: 0; text-shadow: 0 0 15px var(--neon-red);">PREPARADOS</h1>
-                <p style="color: #fff; font-size: 18px; margin-bottom: 20px; line-height: 1.4;">PRESIONA LA PANTALLA RÁPIDAMENTE PARA AVANZAR.</p>
-                <p style="color: var(--neon-red); font-size: 20px; font-weight: bold; animation: pulso 1s infinite alternate; margin: 0;">MIRA LA PANTALLA GIGANTE</p>
+                <h1 style="color: var(--neon-red); font-size: 22px; font-family: 'Press Start 2P', cursive; margin-top: 0; text-shadow: 0 0 15px var(--neon-red);">PREPARADOS</h1>
+                <p style="color: #fff; font-size: 16px; margin-bottom: 20px; line-height: 1.4;">PRESIONA LA PANTALLA RÁPIDAMENTE PARA AVANZAR.</p>
+                <p style="color: var(--neon-red); font-size: 14px; font-family: 'Press Start 2P', cursive; animation: pulso 1s infinite alternate; margin: 0;">MIRA LA TV</p>
             </div>
             <div id="contador-gigante">3</div>
         </div>
@@ -76,7 +65,7 @@
 
     <div id="pantalla-juego" class="pantalla" style="padding: 0;">
         <div id="zona-tap">
-            <div id="mensaje-tap">¡PRESIONA<br>RÁPIDO!</div>
+            <div id="mensaje-tap">TAP<br>RÁPIDO</div>
         </div>
     </div>
 
@@ -84,6 +73,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, update, set, increment, onDisconnect, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // NOTA: Recuerda reemplazar con tus credenciales reales
         const firebaseConfig = {
             apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw",
             authDomain: "hipodromo-56215.firebaseapp.com",
@@ -96,7 +86,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const EQUIPOS = ["DELIVER", "DEVELOP", "TRANSFORM"];
+        
         let miNombre = "", miEquipo = null, estadoJuego = 'espera';
         const miID = Math.random().toString(36).substring(2, 10); 
         
@@ -104,14 +94,16 @@
         const msj = document.getElementById('mensaje-tap');
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Sonido 8-bit (onda cuadrada)
         function reproducirPop() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime); // Tono más "digital/futurista"
-            osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            osc.type = 'square'; 
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime); 
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
@@ -124,25 +116,20 @@
             if(val) {
                 miNombre = val.toUpperCase();
                 document.getElementById('pantalla-nombre').classList.remove('activa');
-                document.getElementById('pantalla-seleccion').classList.add('activa');
+                
+                // ASIGNACIÓN ALEATORIA (5 Carriles)
+                const equipoAleatorio = Math.floor(Math.random() * 5) + 1;
+                
                 if(audioCtx.state === 'suspended') audioCtx.resume(); 
+                unirse(equipoAleatorio);
             }
         };
-
-        EQUIPOS.forEach((nombre, i) => {
-            const b = document.createElement('button');
-            b.className = 'btn-equipo';
-            b.innerHTML = `<span style="display:inline-block; transform: scaleX(-1); margin-right: 10px;">🚴</span> ${nombre}`;
-            b.onclick = () => unirse(i + 1);
-            document.getElementById('lista-equipos').appendChild(b);
-        });
 
         function unirse(id) {
             miEquipo = id;
             set(ref(db, `equipos/${id}/jugadores/${miID}`), miNombre);
             onDisconnect(ref(db, `equipos/${id}/jugadores/${miID}`)).remove();
 
-            document.getElementById('pantalla-seleccion').classList.remove('activa');
             document.getElementById('popup-instrucciones').classList.add('activa');
             iniciarMecanicas(id);
         }
@@ -167,7 +154,7 @@
                     document.getElementById('popup-instrucciones').classList.remove('activa');
                     document.getElementById('pantalla-juego').classList.add('activa');
                     zonaTap.classList.remove('victoria', 'derrota');
-                    msj.innerHTML = "¡PRESIONA<br>RÁPIDO!";
+                    msj.innerHTML = "TAP<br>RÁPIDO!";
                 }
             });
 
@@ -176,11 +163,11 @@
                 if (ganador && estadoJuego === 'carrera') {
                     if (miEquipo === ganador) {
                         zonaTap.classList.add('victoria');
-                        msj.innerText = "¡GANAMOS! 🏆";
+                        msj.innerText = "¡GANAMOS!";
                         if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000, 500, 2000]); 
                     } else {
                         zonaTap.classList.add('derrota');
-                        msj.innerText = "FIN DE CARRERA";
+                        msj.innerText = "FIN";
                     }
                 }
             });
@@ -199,7 +186,7 @@
                 num.className = 'flotante';
                 num.innerText = '+1';
                 
-                const tamaño = Math.floor(Math.random() * (60 - 35 + 1)) + 35;
+                const tamaño = Math.floor(Math.random() * (40 - 20 + 1)) + 20;
                 num.style.fontSize = tamaño + 'px';
                 num.style.left = touch.clientX + 'px';
                 num.style.top = touch.clientY + 'px';
