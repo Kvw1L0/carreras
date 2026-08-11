@@ -21,7 +21,7 @@
         <h1>CONTROL<br>STAGE</h1>
         <button class="btn" onclick="iniciarCarrera()">1. INICIAR CARRERA</button>
         <button class="btn btn-ruleta" onclick="lanzarRuleta()">2. SORTEAR GANADOR (RULETA)</button>
-        <button class="btn btn-reset" onclick="resetearJuego()">3. RESETEAR TODO</button>
+        <button class="btn btn-reset" onclick="resetearJuego()">3. RESETEAR PISTA</button>
     </div>
 
     <script type="module">
@@ -41,6 +41,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Se envía un Timestamp único cada vez para asegurar que sea un evento "nuevo"
         window.iniciarCarrera = () => {
             if(confirm("¿Iniciar la cuenta regresiva en la TV?")) {
                 set(ref(db, 'comandoInicio'), Date.now());
@@ -53,6 +54,14 @@
 
         window.resetearJuego = () => {
             if(confirm("¿Estás seguro de borrar todos los jugadores y reiniciar la pista?")) {
+                // 1. Limpiamos los datos duros de la BD
+                set(ref(db, 'estado'), 'espera');
+                set(ref(db, 'ganadorAbsoluto'), null); 
+                const inicial = {};
+                [1,2,3,4,5].forEach(id => { inicial[id] = { clicksTotales: 0 }; });
+                set(ref(db, 'equipos'), inicial);
+                
+                // 2. Disparamos la señal para que las pantallas hagan el Soft Reset
                 set(ref(db, 'comandoReset'), Date.now());
             }
         };

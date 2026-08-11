@@ -96,7 +96,14 @@
 
         function iniciarMecanicas(id) {
             const equipoRef = ref(db, `equipos/${id}`);
-            onValue(ref(db, 'comandoReset'), (snap) => { if(snap.val()) location.reload(); });
+            
+            // BLINDAJE: Ignorar comandos del pasado
+            let ignoreFirstReset = true;
+            onValue(ref(db, 'comandoReset'), (snap) => { 
+                if(ignoreFirstReset) { ignoreFirstReset = false; return; }
+                if(snap.val()) location.reload(); 
+            });
+
             onValue(ref(db, 'estado'), (snapshot) => {
                 estadoJuego = snapshot.val();
                 if(estadoJuego === 'cuenta_regresiva') {

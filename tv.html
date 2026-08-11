@@ -4,47 +4,33 @@
     <title>Music Legends Sprint - TV</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
         :root { --neon-red: #EC0000; --dark-bg: #050505; }
         body { background: var(--dark-bg); color: #fff; font-family: 'Arial Black', sans-serif; margin: 0; overflow: hidden; transition: filter 1s ease-out; }
-        
         #pista-container { width: 100vw; height: 100vh; position: relative; background: url('pista.png') center center / cover no-repeat; background-color: #111; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1); will-change: transform; }
-        
-        /* Posicionamiento Absoluto para 2.5D */
         #zona-carriles { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
         .carril { position: absolute; width: 100%; height: 12vh; display: flex; align-items: center; transform: translateY(-50%); }
-        
         .personaje { position: absolute; left: 0; height: 100%; transition: left 0.1s linear; z-index: 2; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); display: flex; align-items: center;}
         .personaje img { height: 100%; max-height: 12vh; display: block; }
-        
-        .meta { display: none; } /* Ocultamos la meta blanca generica, usaremos el laser rojo de tu imagen */
-
+        .meta { display: none; } 
         .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.8); }
-
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
-        
         #pantalla-desbloqueo { display: flex; z-index: 200; cursor: pointer; }
         #pantalla-desbloqueo h1 { font-family: 'Press Start 2P', cursive; color: var(--neon-red); animation: pulso 1s infinite alternate; }
-
         #titulo-inicio { font-size: 6vh; font-family: 'Press Start 2P', cursive; margin:0; color: #fff; text-shadow: 0 0 20px var(--neon-red); line-height: 1.5;}
-        
         #contador-tv { font-size: 30vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 50px var(--neon-red); display: none; animation: latido 1s infinite; line-height: 1; }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         @keyframes pulso { from { transform: scale(1); } to { transform: scale(1.05); } }
-
         #overlay-ruleta { background: rgba(5, 5, 5, 0.95); z-index: 105; }
         #titulo-ruleta { color: #fff; font-size: 4vh; font-family: 'Press Start 2P', cursive; margin-bottom: 40px; }
         #nombre-ruleta { font-size: 12vh; font-family: 'Press Start 2P', cursive; color: #fff; text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); transition: all 0.1s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
         .ruleta-girando { opacity: 0.8; transform: scale(0.98); }
         .ruleta-ganador { color: var(--neon-red) !important; text-shadow: 0 0 40px var(--neon-red), 0 0 80px var(--neon-red) !important; animation: impactoGanador 0.5s ease-out forwards; }
         @keyframes impactoGanador { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1.05); } }
-
         .puesto { font-size: 3vh; font-family: 'Press Start 2P', cursive; margin: 15px; padding: 20px 40px; background: rgba(236,0,0,0.2); border: 2px solid var(--neon-red); width: 70%; display: flex; justify-content: space-between; color: white; align-items: center; box-shadow: 0 0 15px rgba(236,0,0,0.5); }
     </style>
 </head>
 <body>
     
-    <!-- Pantalla para desbloquear el audio de HTML5 -->
     <div id="pantalla-desbloqueo" class="overlay" onclick="desbloquearSistema()">
         <h1>CLICK PARA INICIAR SISTEMA<br><br><span style="font-size: 2vh; color:#fff;">(Requerido para Audio)</span></h1>
     </div>
@@ -74,35 +60,24 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw",
-            authDomain: "hipodromo-56215.firebaseapp.com",
-            databaseURL: "https://hipodromo-56215-default-rtdb.firebaseio.com",
-            projectId: "hipodromo-56215",
-            storageBucket: "hipodromo-56215.firebasestorage.app",
-            messagingSenderId: "793993929295",
-            appId: "1:793993929295:web:febbad383d625d60c3c03a"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw", authDomain: "hipodromo-56215.firebaseapp.com", databaseURL: "https://hipodromo-56215-default-rtdb.firebaseio.com", projectId: "hipodromo-56215", storageBucket: "hipodromo-56215.firebasestorage.app", messagingSenderId: "793993929295", appId: "1:793993929295:web:febbad383d625d60c3c03a" };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        // Estructura adaptada a tu imagen. Ajusta los % de 'posicionY' para que pisen exacto la línea.
         const EQUIPOS = [
-            { id: 1, nombre: "M. JACKSON", asset: "jackson.png", posicionY: "32%", audioVictoria: "canciones/jackson.mp3" },
-            { id: 2, nombre: "F. MERCURY", asset: "mercury.png", posicionY: "48%", audioVictoria: "canciones/mercury.mp3" },
-            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "64%", audioVictoria: "canciones/slash.mp3" },
-            { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "78%", audioVictoria: "canciones/bowie.mp3" },
-            { id: 5, nombre: "A. WINEHOUSE", asset: "amy.png", posicionY: "92%", audioVictoria: "canciones/winehouse.mp3" }
+            { id: 1, nombre: "M. JACKSON", asset: "jackson.gif", posicionY: "32%", audioVictoria: "canciones/jackson.mp3" },
+            { id: 2, nombre: "F. MERCURY", asset: "mercury.gif", posicionY: "48%", audioVictoria: "canciones/mercury.mp3" },
+            { id: 3, nombre: "SLASH", asset: "slash.gif", posicionY: "64%", audioVictoria: "canciones/slash.mp3" },
+            { id: 4, nombre: "D. BOWIE", asset: "bowie.gif", posicionY: "78%", audioVictoria: "canciones/bowie.mp3" },
+            { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.gif", posicionY: "92%", audioVictoria: "canciones/winehouse.mp3" }
         ];
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
         let snapshotJugadores = {}; 
         let juegoActivo = false, clasificacion = [];
         let factorVel = 1, enTension = false;
-        const LIMITE_IZQUIERDO_META = 85; // Ajustado al láser rojo de tu imagen
+        const LIMITE_IZQUIERDO_META = 85; 
 
-        // Sistema de Audio
         const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true;
         const audioCarrera = new Audio('canciones/carrera.mp3'); audioCarrera.loop = true;
         let audioGanadorActual = null;
@@ -110,19 +85,33 @@
         window.desbloquearSistema = () => {
             document.getElementById('pantalla-desbloqueo').style.display = 'none';
             document.getElementById('overlay-inicio').style.display = 'flex';
-            audioLobby.play().catch(e => console.log("Audio prevent by browser"));
-            resetDB();
+            audioLobby.play().catch(e => console.log(e));
         };
 
-        function resetDB() {
-            set(ref(db, 'estado'), 'espera');
-            set(ref(db, 'ganadorAbsoluto'), null); 
-            const inicial = {};
-            EQUIPOS.forEach(eq => { 
-                inicial[eq.id] = { clicksTotales: 0 }; 
-                posiciones[eq.id] = 0; anteriorClicks[eq.id] = 0; snapshotJugadores[eq.id] = 0;
+        // Función de reseteo limpio (Sin reiniciar el navegador)
+        function resetCompletoTV() {
+            audioLobby.pause(); audioLobby.currentTime = 0;
+            audioCarrera.pause(); audioCarrera.currentTime = 0;
+            if (audioGanadorActual) { audioGanadorActual.pause(); audioGanadorActual.currentTime = 0; }
+            
+            juegoActivo = false; clasificacion = []; factorVel = 1; enTension = false;
+            
+            EQUIPOS.forEach(eq => {
+                const el = document.getElementById(`p-${eq.id}`);
+                if(el) { el.style.left = "0vw"; el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))"; }
+                anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0; snapshotJugadores[eq.id] = 0;
             });
-            set(ref(db, 'equipos'), inicial);
+            
+            document.getElementById('pista-container').style.transform = `scale(1) translateX(0)`;
+            document.body.classList.remove('efecto-tension');
+            document.getElementById('overlay-podio').style.display = 'none';
+            document.getElementById('overlay-ruleta').style.display = 'none';
+            document.getElementById('contador-tv').style.display = 'none';
+            
+            document.getElementById('titulo-inicio').style.display = 'block';
+            document.getElementById('overlay-inicio').style.display = 'flex';
+            
+            audioLobby.play().catch(e => console.log(e));
         }
 
         onValue(ref(db, 'equipos'), (snap) => { datosEq = snap.val() || {}; });
@@ -130,21 +119,24 @@
         const zonaCarriles = document.getElementById('zona-carriles');
         EQUIPOS.forEach((eq) => {
             const carril = document.createElement('div');
-            carril.className = 'carril';
-            carril.style.top = eq.posicionY; // Aplica la posición vertical
+            carril.className = 'carril'; carril.style.top = eq.posicionY; 
             carril.innerHTML = `<div class="personaje" id="p-${eq.id}"><img src="${eq.asset}" alt="${eq.nombre}"></div>`;
             zonaCarriles.appendChild(carril);
         });
 
-        // Escucha comandos del panel Admin
-        onValue(ref(db, 'comandoReset'), (snap) => { if(snap.val()) location.reload(); });
+        // BLINDAJE: Ignorar las órdenes fantasmas del pasado al cargar la página
+        let ignoreFirstReset = true;
+        onValue(ref(db, 'comandoReset'), (snap) => { 
+            if(ignoreFirstReset) { ignoreFirstReset = false; return; }
+            if(snap.val()) resetCompletoTV(); 
+        });
 
+        let ignoreFirstStart = true;
         onValue(ref(db, 'comandoInicio'), (snap) => {
+            if(ignoreFirstStart) { ignoreFirstStart = false; return; }
             if(snap.val() && !juegoActivo) {
                 document.getElementById('titulo-inicio').style.display = 'none';
                 const tv = document.getElementById('contador-tv'); tv.style.display = 'block';
-                set(ref(db, 'estado'), 'cuenta_regresiva');
-                
                 audioLobby.pause(); audioLobby.currentTime = 0;
                 
                 let num = 3; tv.innerText = num;
@@ -167,8 +159,9 @@
             }
         });
 
-        // Escucha el gatillo de la ruleta desde el admin
+        let ignoreFirstRuleta = true;
         onValue(ref(db, 'triggerRuleta'), (snap) => {
+            if(ignoreFirstRuleta) { ignoreFirstRuleta = false; return; }
             if(snap.val() && clasificacion.length > 0) {
                 document.getElementById('overlay-podio').style.display = 'none';
                 ejecutarRuletaDigital(clasificacion[0]); 
@@ -224,7 +217,6 @@
                         el.style.filter = "drop-shadow(0 0 20px #fff)"; 
 
                         if (clasificacion.length === 1) {
-                            set(ref(db, 'ganadorAbsoluto'), id);
                             juegoActivo = false; 
                             audioCarrera.pause(); audioCarrera.currentTime = 0;
                             
@@ -234,15 +226,13 @@
                             setTimeout(() => {
                                 document.getElementById('pista-container').style.transform = `scale(1) translateX(0)`;
                                 document.body.classList.remove('efecto-tension');
-                                set(ref(db, 'estado'), 'espera'); 
-                                mostrarPodioEpic(); // Solo muestra el podio, la ruleta se lanza desde el Admin
+                                mostrarPodioEpic(); 
                             }, 1500);
                         }
                     }
                 }
             });
 
-            // Lógica de Tensión y Zoom
             const contenedor = document.getElementById('pista-container');
             if (equiposEnZonaTension.length > 0 && !enTension && clasificacion.length === 0) {
                 enTension = true; factorVel = 0.3; document.body.classList.add('efecto-tension');
@@ -265,7 +255,7 @@
             const podioDiv = document.getElementById('overlay-podio');
             const lista = document.getElementById('lista-podio');
             podioDiv.style.display = 'flex';
-            lista.innerHTML = ''; // Limpiar lista previa
+            lista.innerHTML = ''; 
 
             clasificacion.forEach((id, idx) => {
                 if(idx < 3) {
