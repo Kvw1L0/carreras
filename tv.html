@@ -73,13 +73,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        // Coordenadas Lerp (2.5D) integradas para corregir la perspectiva
+        // CORRECCIÓN MATEMÁTICA: Posiciones exactas (Y y X) ajustadas a la nueva imagen.
         const EQUIPOS = [
             { id: 1, nombre: "M. JACKSON", asset: "jackson.png", posicionY: "48%", inicioX: 18, finX: 85, audioVictoria: "canciones/jackson.mp3" },
-            { id: 2, nombre: "F. MERCURY", asset: "mercury.png", posicionY: "60%", inicioX: 13, finX: 85, audioVictoria: "canciones/mercury.mp3" },
-            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "72%", inicioX: 8, finX: 85, audioVictoria: "canciones/slash.mp3" },
-            { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "84%", inicioX: 4, finX: 85, audioVictoria: "canciones/bowie.mp3" },
-            { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "95%", inicioX: 0, finX: 85, audioVictoria: "canciones/winehouse.mp3" }
+            { id: 2, nombre: "F. MERCURY", asset: "mercury.png", posicionY: "56%", inicioX: 14, finX: 85, audioVictoria: "canciones/mercury.mp3" },
+            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "65%", inicioX: 10, finX: 85, audioVictoria: "canciones/slash.mp3" },
+            { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "74%", inicioX: 6, finX: 85, audioVictoria: "canciones/bowie.mp3" },
+            { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "84%", inicioX: 2, finX: 85, audioVictoria: "canciones/winehouse.mp3" }
         ];
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
@@ -101,7 +101,6 @@
         EQUIPOS.forEach((eq) => {
             const carril = document.createElement('div');
             carril.className = 'carril'; carril.style.top = eq.posicionY; 
-            // Se posicionan inicialmente en su marca (eq.inicioX)
             carril.innerHTML = `<div class="personaje" id="p-${eq.id}" style="left: ${eq.inicioX}vw;"><img src="${eq.asset}" alt="${eq.nombre}"></div>`;
             zonaCarriles.appendChild(carril);
             anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0; 
@@ -126,7 +125,7 @@
                 EQUIPOS.forEach(eq => {
                     const el = document.getElementById(`p-${eq.id}`);
                     if(el) { 
-                        el.style.left = eq.inicioX + "vw"; // Reset Lerp
+                        el.style.left = eq.inicioX + "vw"; 
                         el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))"; 
                     }
                     anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0;
@@ -231,7 +230,6 @@
                     }
                     anteriorClicks[id] = clicksActuales; 
 
-                    // FÓRMULA LERP (Interpolación Matemática para perspectiva 2.5D)
                     const progreso = Math.min(posiciones[id] / 1000, 1);
                     const visualLeft = eq.inicioX + (progreso * (eq.finX - eq.inicioX));
 
