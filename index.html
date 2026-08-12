@@ -15,12 +15,11 @@
         .activa { display: flex; animation: aparecer 0.3s ease-out; }
         @keyframes aparecer { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Modal de Llegada a Meta GRANDILOCUENTE */
         #modal-llegada { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(236,0,0,0.8) 0%, rgba(10,10,10,1) 80%); z-index: 900; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; animation: latido-suave 2s infinite alternate;}
         @keyframes latido-suave { from { background: radial-gradient(circle, rgba(236,0,0,0.6) 0%, rgba(10,10,10,1) 80%); } to { background: radial-gradient(circle, rgba(236,0,0,0.9) 0%, rgba(10,10,10,1) 70%); } }
 
         #overlay-contador { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; flex-direction: column; justify-content: center; align-items: center; }
-        #contador-gigante-movil { font-size: 150px; font-family: 'Press Start 2P', cursive; color: var(--neon-red); text-shadow: 0 0 40px var(--neon-red); animation: latido 1s infinite; }
+        #contador-gigante-movil { font-size: 150px; font-family: 'Press Start 2P', cursive; color: var(--neon-red); text-shadow: 0 0 40px var(--neon-red); animation: latido 1s infinite; transition: font-size 0.2s;}
         
         h2 { margin-top: 0; margin-bottom: 20px; font-size: 16px; font-family: 'Press Start 2P', cursive; text-transform: uppercase; line-height: 1.5; color: #fff; text-shadow: 0 0 10px var(--neon-red); }
         input { padding: 15px; font-size: 16px; border: 2px solid #333; border-radius: 8px; width: 85%; text-align: center; font-weight: bold; margin-bottom: 15px; outline: none; background: rgba(0,0,0,0.5); color: #fff; text-transform: uppercase; box-sizing: border-box;}
@@ -38,19 +37,16 @@
         @keyframes pulso-lento { from { opacity: 0.3; transform: scale(1); } to { opacity: 1; transform: scale(1.05); } }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        .victoria-flash { animation: flashRW 0.4s infinite !important; }
+        .victoria-flash { animation: flashRW 0.3s infinite !important; background: #EC0000; z-index: 9999;}
         @keyframes flashRW { 0% { background: #EC0000; } 50% { background: #fff; } 100% { background: #EC0000; } }
-        .victoria-estatica { background: #EC0000 !important; } 
         
-        /* MODO RULETA GANADOR */
         .ruleta-ganador-modo { animation: flashOro 0.2s infinite !important; }
         @keyframes flashOro { 0% { background: #000; } 50% { background: var(--oro); } 100% { background: #000; } }
         
-        .texto-rojo-inverso { color: #EC0000 !important; text-shadow: none !important; }
+        .texto-rojo-inverso { color: #EC0000 !important; text-shadow: 2px 2px 0 #000 !important; }
         .texto-blanco-puro { color: #fff !important; text-shadow: 2px 2px 0 #000 !important; }
         .texto-negro-inverso { color: #000 !important; text-shadow: none !important; }
         
-        .derrota { filter: grayscale(100%); opacity: 0.7; pointer-events: none; }
         .img-equipo { width: 80px; height: 80px; object-fit: contain; margin: 10px auto; filter: drop-shadow(0 0 10px var(--neon-red));}
         
         .flotante { position: absolute; color: #fff; font-family: 'Press Start 2P', cursive; pointer-events: none; animation: subirAleatorio 0.5s ease-out forwards; text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000; }
@@ -87,11 +83,10 @@
         <div id="contador-gigante-movil">3</div>
     </div>
 
-    <!-- Modal Grandilocuente de Meta -->
     <div id="modal-llegada">
-        <h1 style="font-family: 'Press Start 2P', cursive; font-size: 24px; color: #fff; text-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); margin-bottom: 30px;">¡MISION<br>CUMPLIDA!</h1>
+        <h1 id="titulo-modal-llegada" style="font-family: 'Press Start 2P', cursive; font-size: 24px; color: #fff; text-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); margin-bottom: 30px;">¡MISION<br>CUMPLIDA!</h1>
         <h2 id="txt-meta-nombre" style="font-family: 'Arial Black'; font-size: 22px; color: #00ffcc; margin-bottom: 20px; text-transform: uppercase;">...</h2>
-        <p style="font-family: 'Arial Black'; font-size: 14px; color: #ddd; line-height: 1.6; max-width: 80%;">Tu equipo ha cruzado la línea de meta.<br><br>Mantente atento a la pantalla principal mientras los demás terminan la carrera.</p>
+        <p id="txt-meta-desc" style="font-family: 'Arial Black'; font-size: 14px; color: #ddd; line-height: 1.6; max-width: 80%;">Tu equipo ha cruzado la línea de meta.<br><br>Mantente atento a la pantalla principal mientras los demás terminan la carrera.</p>
     </div>
 
     <div id="pantalla-juego" class="pantalla" style="padding: 0;">
@@ -193,6 +188,7 @@
         let cuentaAtrasInterval = null;
         let yaCruzoMeta = false;
         let timerFlash = null;
+        let rankingMostrado = false;
 
         onValue(ref(db, 'estado'), (snapshot) => {
             estadoActual = snapshot.val() || 'cerrado';
@@ -211,13 +207,14 @@
             clearTimeout(timerFlash);
 
             if(estadoActual === 'espera') {
-                yaCruzoMeta = false;
+                yaCruzoMeta = false; rankingMostrado = false;
                 zonaTap.className = ""; msj.className = "";
                 document.getElementById('pantalla-espera').classList.add('activa');
             } 
             else if (estadoActual === 'cuenta_regresiva') {
                 document.getElementById('pantalla-juego').classList.add('activa');
                 overlayContador.style.display = 'flex'; 
+                contadorGigante.style.fontSize = "150px";
                 let num = 3; contadorGigante.innerText = num;
                 reproducirBeep(440);
                 cuentaAtrasInterval = setInterval(() => {
@@ -226,6 +223,7 @@
                         contadorGigante.innerText = num;
                         reproducirBeep(440);
                     } else { 
+                        contadorGigante.style.fontSize = "80px"; // Ajuste para que "GO!" no desborde
                         contadorGigante.innerText = "GO!"; 
                         reproducirBeep(880);
                         clearInterval(cuentaAtrasInterval); 
@@ -240,12 +238,14 @@
                     msj.className = "parpadeo-lento";
                     document.getElementById('pantalla-juego').classList.add('activa');
                 } else {
+                    document.getElementById('titulo-modal-llegada').innerText = "¡MISION CUMPLIDA!";
                     document.getElementById('txt-meta-nombre').innerText = `EXCELENTE, ${miPila}`;
+                    document.getElementById('txt-meta-desc').innerHTML = `Tu equipo ha cruzado la línea de meta.<br><br>Mantente atento a la pantalla principal mientras los demás terminan la carrera.`;
                     modalLlegada.style.display = 'flex';
                 }
             }
             else if (estadoActual === 'podio') {
-                modalLlegada.style.display = 'none';
+                // El flash de 5 segundos se gatilla desde el listener de 'clasificacion'
                 document.getElementById('pantalla-juego').classList.add('activa');
             }
         }
@@ -255,29 +255,46 @@
             
             if (ranking.includes(miEquipo) && estadoActual === 'carrera' && !yaCruzoMeta) {
                 yaCruzoMeta = true;
+                document.getElementById('titulo-modal-llegada').innerText = "¡MISION CUMPLIDA!";
                 document.getElementById('txt-meta-nombre').innerText = `EXCELENTE, ${miPila}`;
+                document.getElementById('txt-meta-desc').innerHTML = `Tu equipo ha cruzado la línea de meta.<br><br>Mantente atento a la pantalla principal mientras los demás terminan la carrera.`;
                 modalLlegada.style.display = 'flex';
                 document.getElementById('pantalla-juego').classList.remove('activa');
             }
 
-            if (estadoActual === 'podio' && ranking.length > 0) {
+            // Flujo de 5 Segundos al revelarse el ganador
+            if (estadoActual === 'podio' && ranking.length > 0 && !rankingMostrado) {
+                rankingMostrado = true;
+                modalLlegada.style.display = 'none';
+                document.getElementById('pantalla-juego').classList.add('activa');
+
                 if (ranking[0] === miEquipo) { 
                     zonaTap.className = "victoria-flash"; 
                     msj.innerHTML = "¡GANAMOS!"; 
+                    msj.style.fontSize = "40px";
                     msj.className = "texto-rojo-inverso";
                     if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000, 500, 2000]); 
                     
+                    // Después de 5 segundos, vuelve al modal pero actualizado
                     timerFlash = setTimeout(() => {
                         if(estadoActual === 'podio' && zonaTap.className !== "ruleta-ganador-modo") {
-                            zonaTap.className = "victoria-estatica";
-                            msj.className = "texto-blanco-puro";
+                            zonaTap.className = "";
+                            document.getElementById('pantalla-juego').classList.remove('activa');
+                            document.getElementById('titulo-modal-llegada').innerText = "¡1ER LUGAR!";
+                            document.getElementById('txt-meta-nombre').innerText = `¡CAMPEONES, ${miPila}!`;
+                            document.getElementById('txt-meta-desc').innerHTML = `Tu equipo fue el más rápido.<br><br>Atento a la RULETA en la pantalla principal para el gran premio.`;
+                            modalLlegada.style.display = 'flex';
                         }
-                    }, 10000);
+                    }, 5000);
 
                 } else { 
-                    zonaTap.className = "derrota"; 
-                    msj.innerHTML = `PUESTO #${ranking.indexOf(miEquipo) + 1}`; 
-                    msj.className = "";
+                    // Para los perdedores, vuelve al modal directamente con su posición
+                    zonaTap.className = "";
+                    document.getElementById('pantalla-juego').classList.remove('activa');
+                    document.getElementById('titulo-modal-llegada').innerText = "¡CARRERA FINALIZADA!";
+                    document.getElementById('txt-meta-nombre').innerText = `PUESTO #${ranking.indexOf(miEquipo) + 1}`;
+                    document.getElementById('txt-meta-desc').innerHTML = `Gracias por participar.<br><br>Atento a la ruleta del equipo ganador en la pantalla principal.`;
+                    modalLlegada.style.display = 'flex';
                 }
             }
         });
@@ -286,6 +303,9 @@
             const uidGanador = snap.val();
             if(uidGanador && uidGanador === miID) {
                 clearTimeout(timerFlash);
+                modalLlegada.style.display = 'none';
+                document.getElementById('pantalla-juego').classList.add('activa');
+                
                 zonaTap.className = "ruleta-ganador-modo";
                 msj.innerHTML = `¡ERES EL<br>ELEGIDO!<br><br><span style="font-size:14px; color:#000;">PASA AL ESCENARIO</span>`;
                 msj.className = "texto-negro-inverso";
@@ -295,7 +315,6 @@
             }
         });
 
-        // OPTIMIZACIÓN: AGRUPACIÓN DE CLICKS PARA ALTO TRÁFICO (200+ USUARIOS)
         let clicksAcumulados = 0;
         let enviandoBatch = false;
 
@@ -320,10 +339,7 @@
                 setTimeout(() => num.remove(), 500);
             }
 
-            // Acumular clicks en el teléfono
             clicksAcumulados++;
-
-            // Enviar un solo paquete a Firebase cada 400ms para evitar cuellos de botella
             if (!enviandoBatch) {
                 enviandoBatch = true;
                 setTimeout(() => {

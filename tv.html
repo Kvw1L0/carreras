@@ -13,12 +13,12 @@
         #zona-carriles { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
         .carril { position: absolute; width: 100%; height: 12vh; display: flex; align-items: center; transform: translateY(-50%); }
         
-        .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.1s linear, transform 1s ease-out, filter 1s; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
+        /* TRANSICIÓN FLUIDA DE 0.4s (Sincronizada con el Batching del Celular) */
+        .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.4s linear, transform 1s ease-out, filter 1s; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .personaje img { display: block; height: auto; max-height: 12vh; width: auto; object-fit: contain; }
         
         .linea-meta { position: absolute; left: 85vw; top: 25vh; bottom: 5vh; width: 8px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(2px); transform: skewX(-8deg); } 
         
-        .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.8); }
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
         
         #pantalla-desbloqueo { display: flex; z-index: 200; cursor: pointer; }
@@ -38,13 +38,10 @@
         #txt-ganador-epico { font-family: 'Press Start 2P', cursive; font-size: 5vh; color: #fff; text-shadow: 0 0 30px var(--neon-red), 0 0 60px var(--neon-red); margin-top: 5vh; text-align: center; line-height: 1.5; animation: rebote 1s ease-out;}
         @keyframes rebote { 0% { transform: translateY(100px); opacity: 0;} 50% { transform: translateY(-20px); opacity: 1;} 100% { transform: translateY(0); opacity: 1;} }
 
-        #panel-ranking { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50vw; max-width: 800px; background: rgba(0,0,0,0.9); border: 2px solid var(--neon-red); border-radius: 15px; display: none; flex-direction: column; padding: 40px; z-index: 60; backdrop-filter: blur(10px);}
+        #panel-ranking { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60vw; max-width: 900px; background: rgba(0,0,0,0.9); border: 2px solid var(--neon-red); border-radius: 15px; display: none; flex-direction: column; padding: 40px; z-index: 60; backdrop-filter: blur(10px);}
         #panel-ranking h2 { font-family: 'Press Start 2P', cursive; font-size: 4vh; color: #fff; text-align: center; margin-bottom: 40px; text-shadow: 0 0 10px var(--neon-red);}
-        .fila-ranking { display: flex; justify-content: space-between; font-family: 'Press Start 2P', cursive; font-size: 3vh; color: #fff; margin-bottom: 25px; border-bottom: 1px dashed #333; padding-bottom: 15px;}
-        
-        /* Bug del amarillo arreglado: Uso clase exclusiva para el líder */
-        .fila-primero { color: #ffd700; font-size: 4vh; text-shadow: 0 0 10px #ffd700; border-bottom: 2px solid #ffd700;} 
-        
+        .fila-ranking { display: flex; align-items: center; justify-content: space-between; font-family: 'Press Start 2P', cursive; font-size: 2.5vh; color: #fff; margin-bottom: 25px; border-bottom: 1px dashed #333; padding-bottom: 15px;}
+        .fila-primero { color: #ffd700; font-size: 3.5vh; text-shadow: 0 0 10px #ffd700; border-bottom: 2px solid #ffd700;} 
         @keyframes aparecer { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
         
         #overlay-ruleta { background: rgba(5, 5, 5, 0.95); z-index: 105; }
@@ -54,7 +51,6 @@
         .ruleta-ganador { color: var(--neon-red) !important; text-shadow: 0 0 40px var(--neon-red), 0 0 80px var(--neon-red) !important; animation: impactoGanador 0.5s ease-out forwards; }
         @keyframes impactoGanador { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1.05); } }
         
-        /* Pantalla Limpia (Cerrado) */
         #pantalla-limpia { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999; flex-direction: column; justify-content: center; align-items: center;}
         #pantalla-limpia h2 { font-family: 'Press Start 2P', cursive; color: #333; font-size: 2vh;}
     </style>
@@ -65,7 +61,6 @@
         <h1>CLICK PARA INICIAR TV<br><br><span style="font-size: 2vh; color:#fff;">(Requerido para Audio)</span></h1>
     </div>
 
-    <!-- Limpieza total -->
     <div id="pantalla-limpia">
         <h2>ESPERANDO AL ADMINISTRADOR...</h2>
     </div>
@@ -121,43 +116,35 @@
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
         let snapshotJugadores = {}; 
         let juegoActivo = false, clasificacion = [];
+        let tiempoInicio = 0, tiemposFinales = {}; // Cronómetro
         const LIMITE_META = 85; 
 
-        let volGlobal = 0.7; // Volumen por defecto
+        let volGlobal = 0.7; 
         const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true; audioLobby.volume = volGlobal;
         const audioCarrera = new Audio('canciones/carrera.mp3'); audioCarrera.loop = true; audioCarrera.volume = volGlobal;
         const audioDrumroll = new Audio('canciones/drumroll.mp3'); audioDrumroll.volume = volGlobal;
         let audioGanadorActual = null;
 
-        // Escucha Máster de Volumen
         onValue(ref(db, 'volumenGlobal'), (snap) => {
             const v = snap.val();
             if(v !== null) {
                 volGlobal = v;
-                audioLobby.volume = volGlobal;
-                audioCarrera.volume = volGlobal;
-                audioDrumroll.volume = volGlobal;
+                audioLobby.volume = volGlobal; audioCarrera.volume = volGlobal; audioDrumroll.volume = volGlobal;
                 if(audioGanadorActual) audioGanadorActual.volume = volGlobal;
             }
         });
 
-        // Soundcheck a los altavoces
         let ignoreFirstSound = true;
         onValue(ref(db, 'triggerSoundcheck'), (snap) => {
             if(ignoreFirstSound) { ignoreFirstSound = false; return; }
-            if(snap.val()) {
-                audioDrumroll.currentTime = 0;
-                audioDrumroll.play().catch(e=>console.log(e));
-            }
+            if(snap.val()) { audioDrumroll.currentTime = 0; audioDrumroll.play().catch(e=>console.log(e)); }
         });
 
-        // Test Luces / Animación Victoria
         let ignoreFirstTestVic = true;
         onValue(ref(db, 'triggerTestVictoria'), (snap) => {
             if(ignoreFirstTestVic) { ignoreFirstTestVic = false; return; }
             if(snap.val()) {
-                // Forzar ID 1 (M. Jackson) como ganador para la prueba
-                clasificacion = [1,2,3,4,5];
+                clasificacion = [1,2,3,4,5]; tiemposFinales = {1:"10.55", 2:"12.10", 3:"14.05", 4:"16.20", 5:"18.99"};
                 animacionFinalPodio();
             }
         });
@@ -230,11 +217,10 @@
                 document.getElementById('contador-tv').style.display = 'none';
                 
                 audioLobby.pause(); audioCarrera.pause(); if(audioGanadorActual) audioGanadorActual.pause();
-                
-                document.getElementById('pantalla-limpia').style.display = 'flex'; // Limpieza Total
+                document.getElementById('pantalla-limpia').style.display = 'flex'; 
             }
             else if (estado === 'espera') {
-                juegoActivo = false; clasificacion = []; 
+                juegoActivo = false; clasificacion = []; tiempoInicio = 0; tiemposFinales = {};
                 document.getElementById('pantalla-limpia').style.display = 'none';
                 document.getElementById('pista-container').classList.remove('pista-oscura');
                 document.getElementById('spotlight-ganador').style.display = 'none';
@@ -285,10 +271,14 @@
                     }
                 }, 1000);
             }
-            else if (estado === 'carrera') { juegoActivo = true; audioCarrera.play(); }
+            else if (estado === 'carrera') { 
+                juegoActivo = true; 
+                if(tiempoInicio === 0) tiempoInicio = Date.now(); // Arranca Cronómetro
+                audioCarrera.play(); 
+            }
         });
 
-        // RULETA ESTRICTA: Sortea UID real y sube a Firebase
+        // Seguro contra equipos vacíos en la ruleta
         let ignoreFirstRuleta = true;
         onValue(ref(db, 'triggerRuleta'), (snap) => {
             if(ignoreFirstRuleta) { ignoreFirstRuleta = false; return; }
@@ -304,8 +294,14 @@
             overlayRuleta.style.display = 'flex';
             
             const equipoData = datosEq[idEquipoGanador];
-            let arrayJugadores = [["NO_ID", "NADIE"]]; 
-            if (equipoData && equipoData.jugadores) { arrayJugadores = Object.entries(equipoData.jugadores); } // [[uid, nombre], ...]
+            let arrayJugadores = []; 
+            if (equipoData && equipoData.jugadores && Object.keys(equipoData.jugadores).length > 0) { 
+                arrayJugadores = Object.entries(equipoData.jugadores); 
+            } else {
+                // Seguro de Fallos (Para QA/Pruebas): Sortea entre TODOS los participantes de la sala
+                Object.values(datosEq).forEach(eq => { if(eq.jugadores) arrayJugadores.push(...Object.entries(eq.jugadores)); });
+                if(arrayJugadores.length === 0) arrayJugadores = [["NO_ID", "NADIE EN LA SALA"]];
+            }
             
             let tiempo = 0; const tiempoMaximo = 4000; const velocidadCambio = 60; 
             displayNombre.classList.add('ruleta-girando');
@@ -320,8 +316,7 @@
                     const ganadorFinal = arrayJugadores[Math.floor(Math.random() * arrayJugadores.length)];
                     displayNombre.innerText = ganadorFinal[1];
                     
-                    // Dispara reacción en el celular de ese jugador específico
-                    set(ref(db, 'ganadorRuleta'), ganadorFinal[0]);
+                    if(ganadorFinal[0] !== "NO_ID") set(ref(db, 'ganadorRuleta'), ganadorFinal[0]);
                     
                     displayNombre.classList.remove('ruleta-girando');
                     displayNombre.classList.add('ruleta-ganador');
@@ -358,7 +353,10 @@
 
                 if (posiciones[id] >= 1000) {
                     clasificacion.push(id);
+                    // Registrar Tiempo Oficial
+                    tiemposFinales[id] = ((Date.now() - tiempoInicio) / 1000).toFixed(2);
                     set(ref(db, 'clasificacion'), clasificacion); 
+                    
                     if(el) el.style.filter = "drop-shadow(0 0 20px #fff)"; 
                     
                     if (clasificacion.length === 5) {
@@ -366,7 +364,8 @@
                         set(ref(db, 'ganadorAbsoluto'), clasificacion[0]);
                         audioCarrera.pause(); audioCarrera.currentTime = 0;
                         audioDrumroll.currentTime = 0; audioDrumroll.play().catch(e=>console.log(e)); 
-                        setTimeout(() => { animacionFinalPodio(); }, 3000); 
+                        // Espera 4 Segundos antes de revelar
+                        setTimeout(() => { animacionFinalPodio(); }, 4000); 
                     }
                 }
             });
@@ -397,9 +396,10 @@
                 lista.innerHTML = '';
                 clasificacion.forEach((id, idx) => {
                     const nom = EQUIPOS.find(e => e.id === id).nombre;
-                    // FIX RANKING: Solo el primero lleva clase especial oro
+                    const tiempo = tiemposFinales[id] ? tiemposFinales[id] + "s" : "--";
                     const claseCss = (idx === 0) ? 'fila-ranking fila-primero' : 'fila-ranking';
-                    lista.innerHTML += `<div class="${claseCss}"><span>#${idx+1}</span> <span>${nom}</span></div>`;
+                    // Se añadió el tiempo al final de la fila
+                    lista.innerHTML += `<div class="${claseCss}"><span style="width: 10%;">#${idx+1}</span> <span style="flex-grow: 1; text-align: left; padding-left: 20px;">${nom}</span> <span style="color: #aaa; font-family: 'Arial Black'; font-size: 0.8em;">${tiempo}</span></div>`;
                 });
                 
                 panel.style.display = 'flex';
