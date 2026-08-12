@@ -21,30 +21,21 @@
         <h1>CONTROL<br>STAGE</h1>
         <button class="btn" onclick="iniciarCarrera()">1. INICIAR CARRERA</button>
         <button class="btn btn-ruleta" onclick="lanzarRuleta()">2. SORTEAR GANADOR (RULETA)</button>
-        <button class="btn btn-reset" onclick="resetearJuego()">3. RESETEAR PISTA</button>
+        <button class="btn btn-reset" onclick="resetearJuego()">3. RESETEAR A SALA ESPERA</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw",
-            authDomain: "hipodromo-56215.firebaseapp.com",
-            databaseURL: "https://hipodromo-56215-default-rtdb.firebaseio.com",
-            projectId: "hipodromo-56215",
-            storageBucket: "hipodromo-56215.firebasestorage.app",
-            messagingSenderId: "793993929295",
-            appId: "1:793993929295:web:febbad383d625d60c3c03a"
-        };
-
+        // NOTA: Recuerda poner tus credenciales aquí también
+        const firebaseConfig = { apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw", authDomain: "hipodromo-56215.firebaseapp.com", databaseURL: "https://hipodromo-56215-default-rtdb.firebaseio.com", projectId: "hipodromo-56215", storageBucket: "hipodromo-56215.firebasestorage.app", messagingSenderId: "793993929295", appId: "1:793993929295:web:febbad383d625d60c3c03a" };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Se envía un Timestamp único cada vez para asegurar que sea un evento "nuevo"
         window.iniciarCarrera = () => {
-            if(confirm("¿Iniciar la cuenta regresiva en la TV?")) {
-                set(ref(db, 'comandoInicio'), Date.now());
+            if(confirm("¿Iniciar cuenta regresiva en TV?")) {
+                set(ref(db, 'estado'), 'cuenta_regresiva');
             }
         };
 
@@ -53,16 +44,13 @@
         };
 
         window.resetearJuego = () => {
-            if(confirm("¿Estás seguro de borrar todos los jugadores y reiniciar la pista?")) {
-                // 1. Limpiamos los datos duros de la BD
-                set(ref(db, 'estado'), 'espera');
-                set(ref(db, 'ganadorAbsoluto'), null); 
+            if(confirm("¿Borrar puntajes y enviar a todos a la Sala de Espera?")) {
                 const inicial = {};
-                [1,2,3,4,5].forEach(id => { inicial[id] = { clicksTotales: 0 }; });
+                [1,2,3,4,5].forEach(id => { inicial[id] = { clicksTotales: 0, jugadores: null }; });
                 set(ref(db, 'equipos'), inicial);
-                
-                // 2. Disparamos la señal para que las pantallas hagan el Soft Reset
-                set(ref(db, 'comandoReset'), Date.now());
+                set(ref(db, 'ganadorAbsoluto'), null);
+                // El estado 'espera' es la ley. TV y Celulares lo obedecen.
+                set(ref(db, 'estado'), 'espera'); 
             }
         };
     </script>

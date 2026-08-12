@@ -14,18 +14,23 @@
         .meta { display: none; } 
         .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.8); }
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
+        
         #pantalla-desbloqueo { display: flex; z-index: 200; cursor: pointer; }
         #pantalla-desbloqueo h1 { font-family: 'Press Start 2P', cursive; color: var(--neon-red); animation: pulso 1s infinite alternate; }
+        
         #titulo-inicio { font-size: 6vh; font-family: 'Press Start 2P', cursive; margin:0; color: #fff; text-shadow: 0 0 20px var(--neon-red); line-height: 1.5;}
         #contador-tv { font-size: 30vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 50px var(--neon-red); display: none; animation: latido 1s infinite; line-height: 1; }
+        
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         @keyframes pulso { from { transform: scale(1); } to { transform: scale(1.05); } }
+        
         #overlay-ruleta { background: rgba(5, 5, 5, 0.95); z-index: 105; }
         #titulo-ruleta { color: #fff; font-size: 4vh; font-family: 'Press Start 2P', cursive; margin-bottom: 40px; }
         #nombre-ruleta { font-size: 12vh; font-family: 'Press Start 2P', cursive; color: #fff; text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 255, 255, 0.5); transition: all 0.1s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90vw; }
         .ruleta-girando { opacity: 0.8; transform: scale(0.98); }
         .ruleta-ganador { color: var(--neon-red) !important; text-shadow: 0 0 40px var(--neon-red), 0 0 80px var(--neon-red) !important; animation: impactoGanador 0.5s ease-out forwards; }
         @keyframes impactoGanador { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1.05); } }
+        
         .puesto { font-size: 3vh; font-family: 'Press Start 2P', cursive; margin: 15px; padding: 20px 40px; background: rgba(236,0,0,0.2); border: 2px solid var(--neon-red); width: 70%; display: flex; justify-content: space-between; color: white; align-items: center; box-shadow: 0 0 15px rgba(236,0,0,0.5); }
     </style>
 </head>
@@ -64,16 +69,16 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
+        // CORRECCIÓN EXTENSIÓN: Ahora son archivos .png
         const EQUIPOS = [
-            { id: 1, nombre: "M. JACKSON", asset: "jackson.gif", posicionY: "32%", audioVictoria: "canciones/jackson.mp3" },
-            { id: 2, nombre: "F. MERCURY", asset: "mercury.gif", posicionY: "48%", audioVictoria: "canciones/mercury.mp3" },
-            { id: 3, nombre: "SLASH", asset: "slash.gif", posicionY: "64%", audioVictoria: "canciones/slash.mp3" },
-            { id: 4, nombre: "D. BOWIE", asset: "bowie.gif", posicionY: "78%", audioVictoria: "canciones/bowie.mp3" },
-            { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.gif", posicionY: "92%", audioVictoria: "canciones/winehouse.mp3" }
+            { id: 1, nombre: "M. JACKSON", asset: "jackson.png", posicionY: "32%", audioVictoria: "canciones/jackson.mp3" },
+            { id: 2, nombre: "F. MERCURY", asset: "mercury.png", posicionY: "48%", audioVictoria: "canciones/mercury.mp3" },
+            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "64%", audioVictoria: "canciones/slash.mp3" },
+            { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "78%", audioVictoria: "canciones/bowie.mp3" },
+            { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "92%", audioVictoria: "canciones/winehouse.mp3" }
         ];
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
-        let snapshotJugadores = {}; 
         let juegoActivo = false, clasificacion = [];
         let factorVel = 1, enTension = false;
         const LIMITE_IZQUIERDO_META = 85; 
@@ -88,53 +93,47 @@
             audioLobby.play().catch(e => console.log(e));
         };
 
-        // Función de reseteo limpio (Sin reiniciar el navegador)
-        function resetCompletoTV() {
-            audioLobby.pause(); audioLobby.currentTime = 0;
-            audioCarrera.pause(); audioCarrera.currentTime = 0;
-            if (audioGanadorActual) { audioGanadorActual.pause(); audioGanadorActual.currentTime = 0; }
-            
-            juegoActivo = false; clasificacion = []; factorVel = 1; enTension = false;
-            
-            EQUIPOS.forEach(eq => {
-                const el = document.getElementById(`p-${eq.id}`);
-                if(el) { el.style.left = "0vw"; el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))"; }
-                anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0; snapshotJugadores[eq.id] = 0;
-            });
-            
-            document.getElementById('pista-container').style.transform = `scale(1) translateX(0)`;
-            document.body.classList.remove('efecto-tension');
-            document.getElementById('overlay-podio').style.display = 'none';
-            document.getElementById('overlay-ruleta').style.display = 'none';
-            document.getElementById('contador-tv').style.display = 'none';
-            
-            document.getElementById('titulo-inicio').style.display = 'block';
-            document.getElementById('overlay-inicio').style.display = 'flex';
-            
-            audioLobby.play().catch(e => console.log(e));
-        }
-
-        onValue(ref(db, 'equipos'), (snap) => { datosEq = snap.val() || {}; });
-
         const zonaCarriles = document.getElementById('zona-carriles');
         EQUIPOS.forEach((eq) => {
             const carril = document.createElement('div');
             carril.className = 'carril'; carril.style.top = eq.posicionY; 
             carril.innerHTML = `<div class="personaje" id="p-${eq.id}"><img src="${eq.asset}" alt="${eq.nombre}"></div>`;
             zonaCarriles.appendChild(carril);
+            
+            anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0; // Iniciar contadores
         });
 
-        // BLINDAJE: Ignorar las órdenes fantasmas del pasado al cargar la página
-        let ignoreFirstReset = true;
-        onValue(ref(db, 'comandoReset'), (snap) => { 
-            if(ignoreFirstReset) { ignoreFirstReset = false; return; }
-            if(snap.val()) resetCompletoTV(); 
-        });
+        onValue(ref(db, 'equipos'), (snap) => { datosEq = snap.val() || {}; });
 
-        let ignoreFirstStart = true;
-        onValue(ref(db, 'comandoInicio'), (snap) => {
-            if(ignoreFirstStart) { ignoreFirstStart = false; return; }
-            if(snap.val() && !juegoActivo) {
+        // MÁQUINA DE ESTADOS EN TV
+        onValue(ref(db, 'estado'), (snap) => {
+            const estado = snap.val();
+            
+            if (estado === 'espera') {
+                // RESET TOTAL VISUAL
+                juegoActivo = false; clasificacion = []; factorVel = 1; enTension = false;
+                EQUIPOS.forEach(eq => {
+                    const el = document.getElementById(`p-${eq.id}`);
+                    if(el) { el.style.left = "0vw"; el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))"; }
+                    anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0;
+                });
+                
+                document.getElementById('pista-container').style.transform = `scale(1) translateX(0)`;
+                document.body.classList.remove('efecto-tension');
+                
+                document.getElementById('overlay-podio').style.display = 'none';
+                document.getElementById('overlay-ruleta').style.display = 'none';
+                document.getElementById('contador-tv').style.display = 'none';
+                
+                document.getElementById('titulo-inicio').style.display = 'block';
+                document.getElementById('overlay-inicio').style.display = 'flex';
+                
+                audioCarrera.pause(); audioCarrera.currentTime = 0;
+                if (audioGanadorActual) { audioGanadorActual.pause(); audioGanadorActual.currentTime = 0; }
+                audioLobby.play().catch(e=>console.log(e));
+
+            } 
+            else if (estado === 'cuenta_regresiva') {
                 document.getElementById('titulo-inicio').style.display = 'none';
                 const tv = document.getElementById('contador-tv'); tv.style.display = 'block';
                 audioLobby.pause(); audioLobby.currentTime = 0;
@@ -144,21 +143,18 @@
                     num--; if(num>0) tv.innerText = num;
                     else { 
                         clearInterval(int); tv.innerText = "GO!"; 
-                        EQUIPOS.forEach(eq => {
-                            const data = datosEq[eq.id];
-                            snapshotJugadores[eq.id] = (data && data.jugadores) ? Object.keys(data.jugadores).length : 0;
-                        });
-                        setTimeout(() => { 
-                            document.getElementById('overlay-inicio').style.display = 'none';
-                            set(ref(db, 'estado'), 'carrera'); 
-                            juegoActivo = true; 
-                            audioCarrera.play();
-                        }, 500); 
+                        setTimeout(() => { set(ref(db, 'estado'), 'carrera'); }, 500); 
                     }
                 }, 1000);
             }
+            else if (estado === 'carrera') {
+                document.getElementById('overlay-inicio').style.display = 'none';
+                juegoActivo = true; 
+                audioCarrera.play();
+            }
         });
 
+        // Escucha el gatillo de la ruleta desde el admin
         let ignoreFirstRuleta = true;
         onValue(ref(db, 'triggerRuleta'), (snap) => {
             if(ignoreFirstRuleta) { ignoreFirstRuleta = false; return; }
@@ -200,26 +196,40 @@
             let equiposEnZonaTension = []; 
 
             EQUIPOS.forEach((eq) => {
-                const id = eq.id; const data = datosEq[id]; const jgsActivos = snapshotJugadores[id];
-                if(jgsActivos > 0 && !clasificacion.includes(id)) {
-                    const nuevosClicks = data.clicksTotales - anteriorClicks[id];
-                    const avance = (nuevosClicks / jgsActivos) * 5 * factorVel; 
+                const id = eq.id; 
+                const data = datosEq[id] || { clicksTotales: 0, jugadores: null }; 
+                
+                // CORRECCIÓN MATEMÁTICA: Calculamos los jugadores activos en tiempo real
+                const jugadoresActivos = (data.jugadores) ? Object.keys(data.jugadores).length : 0;
+                // Blindaje: El divisor jamás puede ser 0 (evita congelar personajes si la TV falla)
+                const divisor = Math.max(1, jugadoresActivos);
+
+                if(!clasificacion.includes(id)) {
+                    const clicksActuales = data.clicksTotales || 0;
+                    const nuevosClicks = clicksActuales - anteriorClicks[id];
                     
-                    posiciones[id] += avance; anteriorClicks[id] = data.clicksTotales;
+                    if (nuevosClicks > 0) {
+                        const avance = (nuevosClicks / divisor) * 5 * factorVel; 
+                        posiciones[id] += avance; 
+                    }
+                    anteriorClicks[id] = clicksActuales;
+
                     const visualLeft = (posiciones[id] / 1000) * LIMITE_IZQUIERDO_META;
                     const el = document.getElementById(`p-${id}`);
-                    el.style.left = Math.min(visualLeft, 95) + "vw";
+                    if(el) el.style.left = Math.min(visualLeft, 95) + "vw";
 
                     if (posiciones[id] >= 900 && posiciones[id] < 1000) equiposEnZonaTension.push(id);
 
                     if (posiciones[id] >= 1000) {
                         clasificacion.push(id);
-                        el.style.filter = "drop-shadow(0 0 20px #fff)"; 
+                        if(el) el.style.filter = "drop-shadow(0 0 20px #fff)"; 
 
                         if (clasificacion.length === 1) {
                             juegoActivo = false; 
-                            audioCarrera.pause(); audioCarrera.currentTime = 0;
+                            set(ref(db, 'ganadorAbsoluto'), id);
+                            set(ref(db, 'estado'), 'podio');
                             
+                            audioCarrera.pause(); audioCarrera.currentTime = 0;
                             audioGanadorActual = new Audio(eq.audioVictoria);
                             audioGanadorActual.play().catch(e=>console.log(e));
 
