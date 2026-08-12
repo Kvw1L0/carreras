@@ -8,7 +8,7 @@
         body { background: var(--dark-bg); color: #fff; font-family: 'Arial Black', sans-serif; margin: 0; overflow: hidden; transition: filter 1s ease-out; }
         
         #pista-container { width: 100vw; height: 100vh; position: relative; background: url('pista.png') center center / cover no-repeat; background-color: #111; transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1), filter 2s; will-change: transform; }
-        .pista-oscura { filter: brightness(0.2); } /* Se apaga la pista para el final */
+        .pista-oscura { filter: brightness(0.2); } 
 
         #zona-carriles { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
         .carril { position: absolute; width: 100%; height: 12vh; display: flex; align-items: center; transform: translateY(-50%); }
@@ -16,8 +16,18 @@
         .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.1s linear, transform 1s ease-out, filter 1s; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .personaje img { display: block; height: auto; max-height: 12vh; width: auto; object-fit: contain; }
         
-        /* Línea de Meta Difuminada en 85vw */
-        .linea-meta { position: absolute; left: 85vw; top: 40vh; bottom: 5vh; width: 6px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(2px); transform: skewX(-20deg); } 
+        .linea-meta { 
+            position: absolute; 
+            left: 85vw; 
+            top: 25vh; 
+            bottom: 5vh; 
+            width: 8px; 
+            background: rgba(236,0,0,0.8); 
+            box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); 
+            z-index: 1; 
+            filter: blur(2px); 
+            transform: skewX(-8deg); 
+        } 
         
         .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.8); }
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
@@ -25,27 +35,30 @@
         #pantalla-desbloqueo { display: flex; z-index: 200; cursor: pointer; }
         #pantalla-desbloqueo h1 { font-family: 'Press Start 2P', cursive; color: var(--neon-red); animation: pulso 1s infinite alternate; }
         
-        /* Lobby Flotante */
         #titulo-inicio { font-size: 6vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 20px var(--neon-red); position: absolute; top: 10vh; width: 100%; text-align: center; margin: 0; z-index: 101;}
         #caja-qr-central { width: 30vw; height: 40vh; border: 4px dashed var(--neon-red); background: rgba(0,0,0,0.5); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 101; border-radius: 20px; backdrop-filter: blur(10px);}
         #pin-display { font-size: 8vh; font-family: 'Press Start 2P', cursive; color: #00ffcc; text-shadow: 0 0 20px #00ffcc; margin-bottom: 20px;}
         
         #nubes-nombres { position: absolute; top:0; left:0; width: 100vw; height: 100vh; overflow: hidden; z-index: 100;}
-        .nombre-flotante { position: absolute; font-family: 'Press Start 2P', cursive; color: #fff; animation: pulso-random 2s infinite alternate; white-space: nowrap;}
-        @keyframes pulso-random { from { transform: scale(1); opacity: 0.5;} to { transform: scale(1.1); opacity: 1;} }
+        .nombre-flotante { position: absolute; font-family: 'Press Start 2P', cursive; text-shadow: 2px 2px 0 #000, 0 0 10px rgba(255,255,255,0.2); white-space: nowrap; animation: flotar 5s infinite ease-in-out alternate;}
+        
+        @keyframes flotar { 
+            0% { transform: translate(0, 0) scale(1); opacity: 0.6;} 
+            50% { transform: translate(25px, -15px) scale(1.1); opacity: 1;} 
+            100% { transform: translate(-15px, 20px) scale(1); opacity: 0.6;} 
+        }
 
         #contador-tv { font-size: 40vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 50px var(--neon-red); display: none; z-index: 105; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}
         
-        /* Animación Final Spotlight */
         #spotlight-ganador { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100vw; height: 100vh; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(236,0,0,0.4) 30%, transparent 60%); display: none; z-index: 50; flex-direction: column; justify-content: center; align-items: center;}
         #txt-ganador-epico { font-family: 'Press Start 2P', cursive; font-size: 5vh; color: #fff; text-shadow: 0 0 30px var(--neon-red), 0 0 60px var(--neon-red); margin-top: 5vh; text-align: center; line-height: 1.5; animation: rebote 1s ease-out;}
         @keyframes rebote { 0% { transform: translateY(100px); opacity: 0;} 50% { transform: translateY(-20px); opacity: 1;} 100% { transform: translateY(0); opacity: 1;} }
 
-        /* Panel Ranking Desplazado */
         #panel-ranking { position: absolute; right: 5vw; top: 20vh; width: 40vw; background: rgba(0,0,0,0.8); border: 2px solid var(--neon-red); border-radius: 15px; display: none; flex-direction: column; padding: 20px; z-index: 60; backdrop-filter: blur(10px);}
         #panel-ranking h2 { font-family: 'Press Start 2P', cursive; font-size: 3vh; color: #fff; text-align: center; margin-bottom: 30px; text-shadow: 0 0 10px var(--neon-red);}
         .fila-ranking { display: flex; justify-content: space-between; font-family: 'Press Start 2P', cursive; font-size: 2vh; color: #fff; margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 10px;}
-        .fila-ranking:nth-child(2) { color: #ffd700; font-size: 2.5vh; text-shadow: 0 0 10px #ffd700;} /* 1er Lugar Oro */
+        .fila-ranking:nth-child(2) { color: #ffd700; font-size: 2.5vh; text-shadow: 0 0 10px #ffd700;} 
+        @keyframes pulso { from { transform: scale(1); } to { transform: scale(1.05); } }
     </style>
 </head>
 <body>
@@ -59,7 +72,6 @@
         <div id="zona-carriles"></div>
     </div>
     
-    <!-- Elementos Finales que flotan sobre la pista apagada -->
     <div id="spotlight-ganador">
         <div id="sprite-ganador-gigante"></div>
         <div id="txt-ganador-epico"></div>
@@ -69,18 +81,16 @@
         <div id="lista-ranking-final"></div>
     </div>
 
-    <!-- LOBBY -->
     <div id="overlay-inicio" class="overlay">
         <h1 id="titulo-inicio">SALA DE ESPERA</h1>
         <div id="nubes-nombres"></div>
         <div id="caja-qr-central">
             <span style="font-family: 'Arial Black'; font-size: 2vh; color: #aaa; margin-bottom: 10px;">PIN DE ACCESO</span>
             <div id="pin-display">----</div>
-            <div style="width: 15vh; height: 15vh; background: #fff; display: flex; justify-content: center; align-items: center; color: #000; font-family: 'Arial Black'; font-size: 1.5vh; text-align: center; border-radius: 10px;">ESPACIO<br>PARA<br>QR AQUI</div>
+            <img src="qr.png" alt="Código QR" style="width: 15vh; height: 15vh; border-radius: 10px; object-fit: cover; background: #fff;">
         </div>
     </div>
 
-    <!-- CONTADOR CENTRAL -->
     <div id="contador-tv">3</div>
 
     <script type="module">
@@ -99,6 +109,9 @@
             { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "81%", inicioX: 6, finX: 85, escala: 1.5, audioVictoria: "canciones/winehouse.mp3" }
         ];
 
+        // Paleta de colores estéticos y corporativos
+        const COLORES_ESTETICOS = ['#FFFFFF', '#EC0000', '#00FFCC', '#FFD700', '#FF0055'];
+
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
         let snapshotJugadores = {}; 
         let juegoActivo = false, clasificacion = [];
@@ -107,7 +120,7 @@
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true;
         const audioCarrera = new Audio('canciones/carrera.mp3'); audioCarrera.loop = true;
-        const audioDrumroll = new Audio('canciones/drumroll.mp3'); // Requiere este archivo corto
+        const audioDrumroll = new Audio('canciones/drumroll.mp3'); 
         let audioGanadorActual = null;
 
         function reproducirBeep(frecuencia) {
@@ -133,7 +146,6 @@
             anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0; 
         });
 
-        // Generar Nubes de nombres esquivando el centro
         onValue(ref(db, 'equipos'), (snap) => { 
             datosEq = snap.val() || {}; 
             if(document.getElementById('overlay-inicio').style.display !== 'none') {
@@ -146,19 +158,24 @@
                             const span = document.createElement('div');
                             span.className = 'nombre-flotante';
                             span.innerText = nombre;
-                            span.style.color = (eq.id % 2 === 0) ? '#fff' : 'var(--neon-red)'; // Variación
                             
-                            // Algoritmo zonas seguras (Esquivar el 30vw central)
+                            // Asignar color aleatorio
+                            span.style.color = COLORES_ESTETICOS[Math.floor(Math.random() * COLORES_ESTETICOS.length)];
+                            
                             let x, y;
                             const zona = Math.floor(Math.random() * 4);
-                            if(zona===0) { x = Math.random()*100; y = Math.random()*25; } // Top
-                            else if(zona===1) { x = Math.random()*100; y = 75 + Math.random()*20; } // Bottom
-                            else if(zona===2) { x = Math.random()*30; y = 30 + Math.random()*40; } // Left
-                            else { x = 70 + Math.random()*20; y = 30 + Math.random()*40; } // Right
+                            if(zona===0) { x = Math.random()*90; y = Math.random()*20; } 
+                            else if(zona===1) { x = Math.random()*90; y = 75 + Math.random()*15; } 
+                            else if(zona===2) { x = Math.random()*25; y = 25 + Math.random()*45; } 
+                            else { x = 65 + Math.random()*25; y = 25 + Math.random()*45; } 
                             
                             span.style.left = x + 'vw'; span.style.top = y + 'vh';
-                            span.style.fontSize = (1 + Math.random()*1.5) + 'vh';
-                            span.style.animationDelay = Math.random()*2 + 's';
+                            span.style.fontSize = (1.5 + Math.random()*1.5) + 'vh';
+                            
+                            // Tiempos aleatorios para que la animación sea orgánica
+                            span.style.animationDelay = (Math.random() * -5) + 's';
+                            span.style.animationDuration = (4 + Math.random() * 4) + 's';
+                            
                             contenedorNombres.appendChild(span);
                         });
                     }
@@ -185,7 +202,6 @@
                         el.style.left = eq.inicioX + "vw"; 
                         el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))";
                         el.style.zIndex = "10";
-                        // Resetear escala interna
                         el.querySelector('img').style.transform = `scale(${eq.escala})`;
                     }
                     anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0;
@@ -204,7 +220,6 @@
                 const tv = document.getElementById('contador-tv'); tv.style.display = 'block';
                 audioLobby.pause(); audioLobby.currentTime = 0;
                 
-                // Congelamos jugadores para las matemáticas
                 EQUIPOS.forEach(eq => {
                     const data = datosEq[eq.id] || {};
                     snapshotJugadores[eq.id] = (data.jugadores) ? Object.keys(data.jugadores).length : 0;
@@ -239,7 +254,7 @@
 
             EQUIPOS.forEach((eq) => {
                 const id = eq.id; 
-                if(clasificacion.includes(id)) return; // Si ya cruzó, no procesar más
+                if(clasificacion.includes(id)) return; 
                 
                 const data = datosEq[id] || { clicksTotales: 0 }; 
                 const divisor = Math.max(1, snapshotJugadores[id] || 0);
@@ -260,19 +275,18 @@
 
                 if (posiciones[id] >= 1000) {
                     clasificacion.push(id);
-                    set(ref(db, 'clasificacion'), clasificacion); // Actualizar Firebase
+                    set(ref(db, 'clasificacion'), clasificacion); 
                     
                     if(el) el.style.filter = "drop-shadow(0 0 20px #fff)"; 
                     
-                    // Si pasaron los 5 competidores, terminar carrera
                     if (clasificacion.length === 5) {
                         juegoActivo = false; 
                         set(ref(db, 'ganadorAbsoluto'), clasificacion[0]);
                         
                         audioCarrera.pause(); audioCarrera.currentTime = 0;
-                        audioDrumroll.play().catch(e=>console.log(e)); // Suspenso...
+                        audioDrumroll.play().catch(e=>console.log(e)); 
                         
-                        setTimeout(() => { animacionFinalPodio(); }, 3000); // 3 seg de drumroll
+                        setTimeout(() => { animacionFinalPodio(); }, 3000); 
                     }
                 }
             });
@@ -288,14 +302,12 @@
             const spotlight = document.getElementById('spotlight-ganador');
             spotlight.style.display = 'flex';
             
-            // Inyectar el sprite gigante
             document.getElementById('sprite-ganador-gigante').innerHTML = `<img src="${eqGanador.asset}" style="height: 40vh; filter: drop-shadow(0 0 30px #fff);">`;
             document.getElementById('txt-ganador-epico').innerHTML = `¡${eqGanador.nombre} GANA<br>EL 1ER LUGAR!`;
             
             audioGanadorActual = new Audio(eqGanador.audioVictoria);
             audioGanadorActual.play().catch(e=>console.log(e));
 
-            // Desplazar el spotlight y mostrar ranking a los 4 segundos
             setTimeout(() => {
                 spotlight.style.left = '20vw';
                 spotlight.style.transform = 'translate(0, -50%)';

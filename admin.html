@@ -21,7 +21,7 @@
         .stats-box { width: 100%; background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px;}
         .pin-display { font-size: 40px; font-family: 'Press Start 2P', cursive; color: #00ffcc; letter-spacing: 5px; margin: 10px 0;}
         .team-stats { display: flex; justify-content: space-around; font-family: 'Press Start 2P', cursive; font-size: 10px; color: #aaa;}
-        .team-col span { display: block; font-size: 18px; color: #fff; margin-top: 5px;}
+        .team-col span { display: block; font-size: 24px; color: #fff; margin-top: 10px; font-family: 'Arial Black';}
     </style>
 </head>
 <body>
@@ -50,8 +50,9 @@
         const firebaseConfig = { apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw", authDomain: "hipodromo-56215.firebaseapp.com", databaseURL: "https://hipodromo-56215-default-rtdb.firebaseio.com", projectId: "hipodromo-56215", storageBucket: "hipodromo-56215.firebasestorage.app", messagingSenderId: "793993929295", appId: "1:793993929295:web:febbad383d625d60c3c03a" };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
+        
+        const NOMBRES_EQUIPOS = { 1: "M. JACKSON", 2: "F. MERCURY", 3: "SLASH", 4: "D. BOWIE", 5: "WINEHOUSE" };
 
-        // Monitoreo en tiempo real
         onValue(ref(db, 'salaActiva'), (snap) => {
             document.getElementById('display-pin').innerText = snap.val() || "----";
         });
@@ -62,7 +63,7 @@
             let html = '';
             [1,2,3,4,5].forEach(id => {
                 const jgs = (datos[id] && datos[id].jugadores) ? Object.keys(datos[id].jugadores).length : 0;
-                html += `<div class="team-col">EQ ${id}<span>${jgs}</span></div>`;
+                html += `<div class="team-col">${NOMBRES_EQUIPOS[id]}<span>${jgs}</span></div>`;
             });
             statsDiv.innerHTML = html;
         });
@@ -95,7 +96,6 @@
                     }
                 });
 
-                // Shuffle array (Fisher-Yates)
                 for (let i = todosLosJugadores.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [todosLosJugadores[i], todosLosJugadores[j]] = [todosLosJugadores[j], todosLosJugadores[i]];
@@ -104,21 +104,19 @@
                 const nuevosEquipos = {};
                 [1,2,3,4,5].forEach(id => { nuevosEquipos[id] = { clicksTotales: 0, jugadores: {} }; });
                 
-                // Repartir equitativamente
                 todosLosJugadores.forEach((jugador, index) => {
                     const eqAsignado = (index % 5) + 1;
                     nuevosEquipos[eqAsignado].jugadores[jugador.uid] = jugador.nombre;
                 });
 
                 set(ref(db, 'equipos'), nuevosEquipos);
-                // Trigger para que los celulares se recarguen y vean su nuevo equipo
                 set(ref(db, 'comandoResetCelulares'), Date.now()); 
             }
         };
 
         window.iniciarCarrera = () => {
             if(confirm("¿Cerrar ingresos y comenzar cuenta regresiva?")) {
-                set(ref(db, 'clasificacion'), null); // Resetear ranking
+                set(ref(db, 'clasificacion'), null); 
                 set(ref(db, 'estado'), 'cuenta_regresiva');
             }
         };
