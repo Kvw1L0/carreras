@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <title>Admin - Music Legends Sprint</title>
+    <title>Admin - Legends Sprint</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -9,49 +9,48 @@
         .panel { background: rgba(255,255,255,0.05); border: 2px solid #EC0000; border-radius: 10px; padding: 30px; max-width: 500px; margin: 0 auto; }
         h1 { font-family: 'Press Start 2P', cursive; font-size: 20px; color: #EC0000; margin-bottom: 40px; line-height: 1.5; }
         .btn { display: block; width: 100%; padding: 20px; font-family: 'Press Start 2P', cursive; font-size: 14px; margin-bottom: 20px; cursor: pointer; background: transparent; color: #fff; border: 2px solid #EC0000; transition: 0.3s; }
-        .btn:hover { background: #EC0000; }
-        .btn-ruleta { border-color: #00ffcc; color: #00ffcc; }
-        .btn-ruleta:hover { background: #00ffcc; color: #000; }
-        .btn-reset { border-color: #ff0055; color: #ff0055; }
-        .btn-reset:hover { background: #ff0055; color: #fff; }
+        .btn-abrir { border-color: #00ffcc; color: #00ffcc; }
+        .btn-abrir:hover { background: #00ffcc; color: #000; }
+        .btn-iniciar { border-color: #ffaa00; color: #ffaa00; }
+        .btn-iniciar:hover { background: #ffaa00; color: #000; }
+        .btn-ruleta { border-color: #ff0055; color: #ff0055; }
+        .btn-ruleta:hover { background: #ff0055; color: #fff; }
     </style>
 </head>
 <body>
     <div class="panel">
-        <h1>CONTROL<br>STAGE</h1>
-        <button class="btn" onclick="iniciarCarrera()">1. INICIAR CARRERA</button>
-        <button class="btn btn-ruleta" onclick="lanzarRuleta()">2. SORTEAR GANADOR (RULETA)</button>
-        <button class="btn btn-reset" onclick="resetearJuego()">3. RESETEAR A SALA ESPERA</button>
+        <h1>CONTROL STAGE</h1>
+        <button class="btn btn-abrir" onclick="abrirSala()">1. ABRIR SALA DE ESPERA (RESET)</button>
+        <button class="btn btn-iniciar" onclick="iniciarCarrera()">2. INICIAR CARRERA</button>
+        <button class="btn btn-ruleta" onclick="lanzarRuleta()">3. SORTEAR GANADOR (RULETA)</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // NOTA: Recuerda poner tus credenciales aquí también
         const firebaseConfig = { apiKey: "AIzaSyAlvRSjQ8HMkYLqWdRnz8sHm6H1anXxNUw", authDomain: "hipodromo-56215.firebaseapp.com", databaseURL: "https://hipodromo-56215-default-rtdb.firebaseio.com", projectId: "hipodromo-56215", storageBucket: "hipodromo-56215.firebasestorage.app", messagingSenderId: "793993929295", appId: "1:793993929295:web:febbad383d625d60c3c03a" };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        window.abrirSala = () => {
+            if(confirm("¿Limpiar todo y recibir nuevos jugadores?")) {
+                const inicial = {};
+                [1,2,3,4,5].forEach(id => { inicial[id] = { clicksTotales: 0, jugadores: null }; });
+                set(ref(db, 'equipos'), inicial);
+                set(ref(db, 'ganadorAbsoluto'), null);
+                set(ref(db, 'estado'), 'espera'); 
+            }
+        };
+
         window.iniciarCarrera = () => {
-            if(confirm("¿Iniciar cuenta regresiva en TV?")) {
+            if(confirm("¿Cerrar ingresos y comenzar cuenta regresiva?")) {
                 set(ref(db, 'estado'), 'cuenta_regresiva');
             }
         };
 
         window.lanzarRuleta = () => {
             set(ref(db, 'triggerRuleta'), Date.now());
-        };
-
-        window.resetearJuego = () => {
-            if(confirm("¿Borrar puntajes y enviar a todos a la Sala de Espera?")) {
-                const inicial = {};
-                [1,2,3,4,5].forEach(id => { inicial[id] = { clicksTotales: 0, jugadores: null }; });
-                set(ref(db, 'equipos'), inicial);
-                set(ref(db, 'ganadorAbsoluto'), null);
-                // El estado 'espera' es la ley. TV y Celulares lo obedecen.
-                set(ref(db, 'estado'), 'espera'); 
-            }
         };
     </script>
 </body>

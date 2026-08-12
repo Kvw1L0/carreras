@@ -36,7 +36,6 @@
 </head>
 <body class="con-fondo">
 
-    <!-- Pantalla 1: Ingreso -->
     <div id="pantalla-nombre" class="pantalla activa">
         <div class="panel-glass">
             <h2>PLAYER 1<br>INSERT NAME</h2>
@@ -45,7 +44,6 @@
         </div>
     </div>
 
-    <!-- Pantalla 2: Sala de Espera (Estricta) -->
     <div id="pantalla-espera" class="pantalla">
         <div class="panel-glass">
             <h1 style="color: var(--neon-red); font-size: 16px; font-family: 'Press Start 2P', cursive; margin-top: 0;">SALA DE ESPERA</h1>
@@ -56,7 +54,6 @@
         </div>
     </div>
 
-    <!-- Pantalla 3: Carrera / Tap -->
     <div id="pantalla-juego" class="pantalla" style="padding: 0;">
         <div id="zona-tap">
             <div id="mensaje-tap">TAP<br>RÁPIDO</div>
@@ -76,7 +73,10 @@
         const NOMBRES_EQUIPOS = ["M. JACKSON", "F. MERCURY", "SLASH", "D. BOWIE", "A. WINEHOUSE"];
         const zonaTap = document.getElementById('zona-tap'); 
         const msj = document.getElementById('mensaje-tap');
+        
+        // Sonidos
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true;
         
         function reproducirPop() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -95,27 +95,25 @@
                 miEquipo = equipoAleatorio;
                 
                 document.getElementById('nombre-equipo-asignado').innerText = NOMBRES_EQUIPOS[equipoAleatorio - 1];
+                
                 if(audioCtx.state === 'suspended') audioCtx.resume(); 
                 
-                // Conectarse a BD
                 set(ref(db, `equipos/${miEquipo}/jugadores/${miID}`), miNombre);
                 onDisconnect(ref(db, `equipos/${miEquipo}/jugadores/${miID}`)).remove();
                 
-                // Mostrar pantalla de espera y evaluar estado
                 evaluarPantalla();
             }
         };
 
         // MÁQUINA DE ESTADOS ESTRICTA
         onValue(ref(db, 'estado'), (snapshot) => {
-            estadoActual = snapshot.val();
+            estadoActual = snapshot.val() || 'espera';
             evaluarPantalla();
         });
 
         function evaluarPantalla() {
-            if(miNombre === "") return; // Si no ha ingresado el nombre, ignorar BD
+            if(miNombre === "") return; 
             
-            // Ocultamos todas
             document.getElementById('pantalla-espera').classList.remove('activa');
             document.getElementById('pantalla-juego').classList.remove('activa');
             const textoEspera = document.getElementById('texto-estado-espera');
@@ -123,17 +121,21 @@
             if(estadoActual === 'espera') {
                 textoEspera.innerText = "Esperando inicio de carrera...";
                 document.getElementById('pantalla-espera').classList.add('activa');
+                audioLobby.play().catch(e=>console.log(e)); // Música de espera en el celular
             } 
             else if (estadoActual === 'cuenta_regresiva') {
                 textoEspera.innerText = "¡PREPARADOS!...";
                 document.getElementById('pantalla-espera').classList.add('activa');
+                audioLobby.pause(); 
             } 
             else if (estadoActual === 'carrera') {
+                audioLobby.pause();
                 zonaTap.classList.remove('victoria', 'derrota'); 
                 msj.innerHTML = "TAP<br>RÁPIDO!";
                 document.getElementById('pantalla-juego').classList.add('activa');
             }
             else if (estadoActual === 'podio') {
+                audioLobby.pause();
                 document.getElementById('pantalla-juego').classList.add('activa');
             }
         }
@@ -152,7 +154,7 @@
 
         zonaTap.addEventListener('touchstart', (e) => {
             e.preventDefault(); 
-            if(estadoActual !== 'carrera') return; // Bloqueo estricto
+            if(estadoActual !== 'carrera') return; 
             if (e.touches.length > 1) return;
 
             update(ref(db, `equipos/${miEquipo}`), { clicksTotales: increment(1) }); 
