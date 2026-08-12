@@ -124,10 +124,8 @@
         const contadorGigante = document.getElementById('contador-gigante-movil');
         const modalLlegada = document.getElementById('modal-llegada');
         
-        // Volumen máximo fijado al 70%
         const VOLUMEN_MAX = 0.7;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        // NOTA: Se eliminó audioLobby por requerimiento
         
         function reproducirPop() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
@@ -195,7 +193,6 @@
         let cuentaAtrasInterval = null;
         let yaCruzoMeta = false;
         let timerFlash = null;
-        let miEquipoGano = false;
 
         onValue(ref(db, 'estado'), (snapshot) => {
             estadoActual = snapshot.val() || 'cerrado';
@@ -214,7 +211,7 @@
             clearTimeout(timerFlash);
 
             if(estadoActual === 'espera') {
-                yaCruzoMeta = false; miEquipoGano = false;
+                yaCruzoMeta = false;
                 zonaTap.className = ""; msj.className = "";
                 document.getElementById('pantalla-espera').classList.add('activa');
             } 
@@ -243,6 +240,7 @@
                     msj.className = "parpadeo-lento";
                     document.getElementById('pantalla-juego').classList.add('activa');
                 } else {
+                    document.getElementById('txt-meta-nombre').innerText = `EXCELENTE, ${miPila}`;
                     modalLlegada.style.display = 'flex';
                 }
             }
@@ -264,7 +262,6 @@
 
             if (estadoActual === 'podio' && ranking.length > 0) {
                 if (ranking[0] === miEquipo) { 
-                    miEquipoGano = true;
                     zonaTap.className = "victoria-flash"; 
                     msj.innerHTML = "¡GANAMOS!"; 
                     msj.className = "texto-rojo-inverso";
@@ -285,28 +282,28 @@
             }
         });
 
-        // REACCIÓN AL GANAR LA RULETA
         onValue(ref(db, 'ganadorRuleta'), (snap) => {
             const uidGanador = snap.val();
             if(uidGanador && uidGanador === miID) {
-                // Secuestro total de pantalla: Eres el elegido
                 clearTimeout(timerFlash);
                 zonaTap.className = "ruleta-ganador-modo";
                 msj.innerHTML = `¡ERES EL<br>ELEGIDO!<br><br><span style="font-size:14px; color:#000;">PASA AL ESCENARIO</span>`;
                 msj.className = "texto-negro-inverso";
                 
-                // Vibración continua y sonido
                 if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200, 100, 1000, 500, 2000, 500, 2000]);
                 reproducirBeep(1000); setTimeout(()=>reproducirBeep(1200), 200); setTimeout(()=>reproducirBeep(1500), 400);
             }
         });
+
+        // OPTIMIZACIÓN: AGRUPACIÓN DE CLICKS PARA ALTO TRÁFICO (200+ USUARIOS)
+        let clicksAcumulados = 0;
+        let enviandoBatch = false;
 
         zonaTap.addEventListener('touchstart', (e) => {
             e.preventDefault(); 
             if(estadoActual !== 'carrera' || yaCruzoMeta) return; 
             if (e.touches.length > 1) return;
 
-            update(ref(db, `equipos/${miEquipo}`), { clicksTotales: increment(1) }); 
             reproducirPop(); 
             if (navigator.vibrate) navigator.vibrate(15); 
             
@@ -321,6 +318,21 @@
                 num.style.left = randX + '%'; num.style.top = randY + '%';
                 zonaTap.appendChild(num); 
                 setTimeout(() => num.remove(), 500);
+            }
+
+            // Acumular clicks en el teléfono
+            clicksAcumulados++;
+
+            // Enviar un solo paquete a Firebase cada 400ms para evitar cuellos de botella
+            if (!enviandoBatch) {
+                enviandoBatch = true;
+                setTimeout(() => {
+                    if (clicksAcumulados > 0) {
+                        update(ref(db, `equipos/${miEquipo}`), { clicksTotales: increment(clicksAcumulados) }); 
+                        clicksAcumulados = 0;
+                    }
+                    enviandoBatch = false;
+                }, 400); 
             }
         });
     </script>
