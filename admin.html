@@ -17,6 +17,8 @@
         .btn-accion:hover { background: #ffaa00; color: #000; }
         .btn-peligro { border-color: #ff0055; color: #ff0055; }
         .btn-peligro:hover { background: #ff0055; color: #fff; }
+        .btn-ruleta { border-color: #b026ff; color: #b026ff; }
+        .btn-ruleta:hover { background: #b026ff; color: #fff; }
 
         .stats-box { width: 100%; background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px;}
         .pin-display { font-size: 40px; font-family: 'Press Start 2P', cursive; color: #00ffcc; letter-spacing: 5px; margin: 10px 0;}
@@ -31,9 +33,7 @@
         <div class="stats-box">
             <h3 style="margin-top: 0; color: #666; font-family: 'Press Start 2P', cursive; font-size: 12px;">SALA ACTIVA (PIN)</h3>
             <div class="pin-display" id="display-pin">----</div>
-            <div class="team-stats" id="team-stats">
-                <!-- Estadisticas inyectadas por JS -->
-            </div>
+            <div class="team-stats" id="team-stats"></div>
         </div>
 
         <button class="btn btn-primario" onclick="abrirSala()">1. CREAR NUEVA SALA (PIN)</button>
@@ -41,7 +41,8 @@
         <button class="btn btn-primario" onclick="iniciarCarrera()" style="width: 93%; font-size: 16px;">3. INICIAR CARRERA</button>
         <button class="btn btn-accion" onclick="devolverLobby()">4. PAUSAR / VOLVER A LOBBY</button>
         <button class="btn btn-peligro" onclick="cerrarSala()">5. CERRAR SALA (EXPULSAR)</button>
-        <button class="btn" style="width: 93%; border-color: #aaa; color: #aaa;" onclick="forzarFinal()">6. FORZAR FINAL (TEST)</button>
+        <button class="btn" style="width: 45%; border-color: #aaa; color: #aaa;" onclick="forzarFinal()">6. FORZAR FINAL (TEST)</button>
+        <button class="btn btn-ruleta" style="width: 45%;" onclick="lanzarRuleta()">7. RULETA (GANADOR)</button>
     </div>
 
     <script type="module">
@@ -136,9 +137,13 @@
         };
 
         window.forzarFinal = () => {
-            if(confirm("¿Acelerar a todos los equipos para que crucen la meta instantáneamente? (Útil para pruebas)")) {
+            if(confirm("¿Acelerar a todos los equipos para que crucen la meta instantáneamente?")) {
                 set(ref(db, 'comandoForzarFinal'), Date.now());
             }
+        };
+
+        window.lanzarRuleta = () => {
+            set(ref(db, 'triggerRuleta'), Date.now());
         };
     </script>
 </body>

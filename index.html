@@ -27,16 +27,21 @@
         .caja-instrucciones { background: rgba(236,0,0,0.2); border: 2px solid var(--neon-red); border-radius: 10px; padding: 20px; margin-bottom: 25px; box-shadow: inset 0 0 15px rgba(236,0,0,0.3); }
         #instruccion-personalizada { color: #fff; font-size: 15px; line-height: 1.6; margin: 0; text-shadow: 1px 1px 2px #000; }
         
-        #zona-tap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; border: 8px solid var(--neon-red); box-sizing: border-box; background: rgba(236, 0, 0, 0.15); backdrop-filter: blur(5px); }
+        #zona-tap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; border: 8px solid var(--neon-red); box-sizing: border-box; background: rgba(236, 0, 0, 0.15); backdrop-filter: blur(5px); transition: background 0.3s;}
         #mensaje-tap { font-size: 30px; font-family: 'Press Start 2P', cursive; text-align: center; color: white; text-shadow: 0 0 20px var(--neon-red), 2px 2px 0 #000; pointer-events: none; line-height: 1.5; z-index: 10;}
         
         .parpadeo-lento { animation: pulso-lento 1.5s infinite alternate; }
         @keyframes pulso-lento { from { opacity: 0.3; transform: scale(1); } to { opacity: 1; transform: scale(1.05); } }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
+        /* Modificadores de Victoria */
         .victoria-flash { animation: flashRW 0.4s infinite !important; }
         @keyframes flashRW { 0% { background: #EC0000; } 50% { background: #fff; } 100% { background: #EC0000; } }
+        
+        .victoria-estatica { background: #EC0000 !important; } /* Tras los 10 segundos */
+        
         .texto-rojo-inverso { color: #EC0000 !important; text-shadow: none !important; }
+        .texto-blanco-puro { color: #fff !important; text-shadow: 2px 2px 0 #000 !important; }
         
         .derrota { filter: grayscale(100%); opacity: 0.7; pointer-events: none; }
         
@@ -184,6 +189,7 @@
 
         let cuentaAtrasInterval = null;
         let yaCruzoMeta = false;
+        let timerFlash = null;
 
         onValue(ref(db, 'estado'), (snapshot) => {
             estadoActual = snapshot.val() || 'cerrado';
@@ -198,6 +204,7 @@
             document.getElementById('pantalla-juego').classList.remove('activa');
             overlayContador.style.display = 'none';
             clearInterval(cuentaAtrasInterval);
+            clearTimeout(timerFlash);
 
             if(estadoActual === 'espera') {
                 yaCruzoMeta = false;
@@ -251,10 +258,22 @@
 
             if (estadoActual === 'podio' && ranking.length > 0) {
                 if (ranking[0] === miEquipo) { 
+                    // EFECTO VICTORIA FLASH (10 Segundos)
                     zonaTap.className = "victoria-flash"; 
                     msj.innerHTML = "¡GANAMOS!"; 
                     msj.classList.add("texto-rojo-inverso");
+                    msj.classList.remove("texto-blanco-puro");
                     if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000, 500, 2000]); 
+                    
+                    // Transición a pantalla corporativa estática
+                    timerFlash = setTimeout(() => {
+                        if(estadoActual === 'podio') {
+                            zonaTap.className = "victoria-estatica";
+                            msj.classList.remove("texto-rojo-inverso");
+                            msj.classList.add("texto-blanco-puro");
+                        }
+                    }, 10000);
+
                 } else { 
                     zonaTap.className = "derrota"; 
                     msj.innerHTML = `PUESTO #${ranking.indexOf(miEquipo) + 1}`; 
@@ -267,7 +286,6 @@
             document.getElementById('pantalla-juego').classList.add('activa');
             zonaTap.className = ""; 
             
-            // Énfasis y estilo en el mensaje de "Cruzaste la meta"
             msj.innerHTML = `
                 <div class="caja-instrucciones" style="margin: 0 20px; border-color: #00ffcc; box-shadow: inset 0 0 15px rgba(0,255,204,0.3); animation: aparecer 0.3s ease-out;">
                     <span style="font-size:20px; font-family:'Press Start 2P', cursive; color:#fff; text-shadow: 0 0 10px #00ffcc;">¡BIEN HECHO,<br>${miPila}!</span><br><br>
