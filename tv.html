@@ -74,11 +74,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        // CALIBRACIÓN MILIMÉTRICA: Trasladando las coordenadas exactas de los carriles inferiores
+        // CALIBRACIÓN FINAL: Slash (ID 3) ajustado a 61% en Y para centrarse en el carril.
         const EQUIPOS = [
             { id: 1, nombre: "M. JACKSON", asset: "jackson.png", posicionY: "48%", inicioX: 18, finX: 85, audioVictoria: "canciones/jackson.mp3" },
             { id: 2, nombre: "F. MERCURY", asset: "mercury.png", posicionY: "53%", inicioX: 16, finX: 85, audioVictoria: "canciones/mercury.mp3" },
-            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "58%", inicioX: 14, finX: 85, audioVictoria: "canciones/slash.mp3" },
+            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "61%", inicioX: 13, finX: 85, audioVictoria: "canciones/slash.mp3" },
             { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "69%", inicioX: 10, finX: 85, audioVictoria: "canciones/bowie.mp3" },
             { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "81%", inicioX: 6, finX: 85, audioVictoria: "canciones/winehouse.mp3" }
         ];
