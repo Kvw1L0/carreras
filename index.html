@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        :root { --neon-red: #EC0000; --dark-bg: #0a0a0a; }
+        :root { --neon-red: #EC0000; --dark-bg: #0a0a0a; --oro: #FFD700; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Arial Black', sans-serif; color: #fff; overflow: hidden; touch-action: none; background: var(--dark-bg); }
         .con-fondo { background: url('fondo.png') center center / cover no-repeat; background-color: var(--dark-bg); }
         
@@ -15,6 +15,10 @@
         .activa { display: flex; animation: aparecer 0.3s ease-out; }
         @keyframes aparecer { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* Modal de Llegada a Meta GRANDILOCUENTE */
+        #modal-llegada { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, rgba(236,0,0,0.8) 0%, rgba(10,10,10,1) 80%); z-index: 900; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box; animation: latido-suave 2s infinite alternate;}
+        @keyframes latido-suave { from { background: radial-gradient(circle, rgba(236,0,0,0.6) 0%, rgba(10,10,10,1) 80%); } to { background: radial-gradient(circle, rgba(236,0,0,0.9) 0%, rgba(10,10,10,1) 70%); } }
+
         #overlay-contador { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 999; flex-direction: column; justify-content: center; align-items: center; }
         #contador-gigante-movil { font-size: 150px; font-family: 'Press Start 2P', cursive; color: var(--neon-red); text-shadow: 0 0 40px var(--neon-red); animation: latido 1s infinite; }
         
@@ -25,7 +29,7 @@
         .btn-accion:active { transform: scale(0.95); }
         
         .caja-instrucciones { background: rgba(236,0,0,0.2); border: 2px solid var(--neon-red); border-radius: 10px; padding: 20px; margin-bottom: 25px; box-shadow: inset 0 0 15px rgba(236,0,0,0.3); }
-        #instruccion-personalizada { color: #fff; font-size: 15px; line-height: 1.6; margin: 0; text-shadow: 1px 1px 2px #000; }
+        #instruccion-personalizada { color: #fff; font-size: 14px; line-height: 1.6; margin: 0; text-shadow: 1px 1px 2px #000; }
         
         #zona-tap { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; border: 8px solid var(--neon-red); box-sizing: border-box; background: rgba(236, 0, 0, 0.15); backdrop-filter: blur(5px); transition: background 0.3s;}
         #mensaje-tap { font-size: 30px; font-family: 'Press Start 2P', cursive; text-align: center; color: white; text-shadow: 0 0 20px var(--neon-red), 2px 2px 0 #000; pointer-events: none; line-height: 1.5; z-index: 10;}
@@ -34,17 +38,19 @@
         @keyframes pulso-lento { from { opacity: 0.3; transform: scale(1); } to { opacity: 1; transform: scale(1.05); } }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        /* Modificadores de Victoria */
         .victoria-flash { animation: flashRW 0.4s infinite !important; }
         @keyframes flashRW { 0% { background: #EC0000; } 50% { background: #fff; } 100% { background: #EC0000; } }
+        .victoria-estatica { background: #EC0000 !important; } 
         
-        .victoria-estatica { background: #EC0000 !important; } /* Tras los 10 segundos */
+        /* MODO RULETA GANADOR */
+        .ruleta-ganador-modo { animation: flashOro 0.2s infinite !important; }
+        @keyframes flashOro { 0% { background: #000; } 50% { background: var(--oro); } 100% { background: #000; } }
         
         .texto-rojo-inverso { color: #EC0000 !important; text-shadow: none !important; }
         .texto-blanco-puro { color: #fff !important; text-shadow: 2px 2px 0 #000 !important; }
+        .texto-negro-inverso { color: #000 !important; text-shadow: none !important; }
         
         .derrota { filter: grayscale(100%); opacity: 0.7; pointer-events: none; }
-        
         .img-equipo { width: 80px; height: 80px; object-fit: contain; margin: 10px auto; filter: drop-shadow(0 0 10px var(--neon-red));}
         
         .flotante { position: absolute; color: #fff; font-family: 'Press Start 2P', cursive; pointer-events: none; animation: subirAleatorio 0.5s ease-out forwards; text-shadow: 0 0 10px var(--neon-red), 2px 2px 0 #000; }
@@ -73,13 +79,19 @@
             <div class="caja-instrucciones">
                 <p id="instruccion-personalizada">...</p>
             </div>
-            
             <p id="texto-estado-espera" class="parpadeo-lento" style="color: var(--neon-red); font-size: 14px; font-family: 'Press Start 2P', cursive; margin-bottom: 0;">ATENTO A LA PANTALLA DEL EVENTO</p>
         </div>
     </div>
 
     <div id="overlay-contador">
         <div id="contador-gigante-movil">3</div>
+    </div>
+
+    <!-- Modal Grandilocuente de Meta -->
+    <div id="modal-llegada">
+        <h1 style="font-family: 'Press Start 2P', cursive; font-size: 24px; color: #fff; text-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); margin-bottom: 30px;">¡MISION<br>CUMPLIDA!</h1>
+        <h2 id="txt-meta-nombre" style="font-family: 'Arial Black'; font-size: 22px; color: #00ffcc; margin-bottom: 20px; text-transform: uppercase;">...</h2>
+        <p style="font-family: 'Arial Black'; font-size: 14px; color: #ddd; line-height: 1.6; max-width: 80%;">Tu equipo ha cruzado la línea de meta.<br><br>Mantente atento a la pantalla principal mientras los demás terminan la carrera.</p>
     </div>
 
     <div id="pantalla-juego" class="pantalla" style="padding: 0;">
@@ -110,30 +122,26 @@
         const msj = document.getElementById('mensaje-tap');
         const overlayContador = document.getElementById('overlay-contador');
         const contadorGigante = document.getElementById('contador-gigante-movil');
+        const modalLlegada = document.getElementById('modal-llegada');
         
+        // Volumen máximo fijado al 70%
+        const VOLUMEN_MAX = 0.7;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true;
+        // NOTA: Se eliminó audioLobby por requerimiento
         
         function reproducirPop() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator(); 
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle'; 
-            osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
-            osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(1, audioCtx.currentTime); 
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.connect(gain); 
-            gain.connect(audioCtx.destination); 
-            osc.start(); 
-            osc.stop(audioCtx.currentTime + 0.1);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(VOLUMEN_MAX, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         }
 
         function reproducirBeep(frecuencia) {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = 'square'; osc.frequency.setValueAtTime(frecuencia, audioCtx.currentTime); 
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(VOLUMEN_MAX * 0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
             osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         }
 
@@ -153,17 +161,14 @@
             
             document.getElementById('pantalla-nombre').classList.remove('activa');
             if(audioCtx.state === 'suspended') audioCtx.resume(); 
-            
             asignarEquipoAleatorio();
         };
 
         function asignarEquipoAleatorio() {
             miEquipo = Math.floor(Math.random() * 5) + 1;
             construirUIEspera();
-            
             set(ref(db, `equipos/${miEquipo}/jugadores/${miID}`), miNombre);
             onDisconnect(ref(db, `equipos/${miEquipo}/jugadores/${miID}`)).remove();
-            
             evaluarPantalla();
         }
 
@@ -190,6 +195,7 @@
         let cuentaAtrasInterval = null;
         let yaCruzoMeta = false;
         let timerFlash = null;
+        let miEquipoGano = false;
 
         onValue(ref(db, 'estado'), (snapshot) => {
             estadoActual = snapshot.val() || 'cerrado';
@@ -203,20 +209,18 @@
             document.getElementById('pantalla-espera').classList.remove('activa');
             document.getElementById('pantalla-juego').classList.remove('activa');
             overlayContador.style.display = 'none';
+            modalLlegada.style.display = 'none';
             clearInterval(cuentaAtrasInterval);
             clearTimeout(timerFlash);
 
             if(estadoActual === 'espera') {
-                yaCruzoMeta = false;
-                zonaTap.className = ""; 
+                yaCruzoMeta = false; miEquipoGano = false;
+                zonaTap.className = ""; msj.className = "";
                 document.getElementById('pantalla-espera').classList.add('activa');
-                audioLobby.play().catch(e=>console.log(e));
             } 
             else if (estadoActual === 'cuenta_regresiva') {
-                audioLobby.pause(); 
                 document.getElementById('pantalla-juego').classList.add('activa');
                 overlayContador.style.display = 'flex'; 
-                
                 let num = 3; contadorGigante.innerText = num;
                 reproducirBeep(440);
                 cuentaAtrasInterval = setInterval(() => {
@@ -232,18 +236,18 @@
                 }, 1000);
             } 
             else if (estadoActual === 'carrera') {
-                audioLobby.pause();
                 overlayContador.style.display = 'none'; 
                 if(!yaCruzoMeta) {
                     msj.innerHTML = "TAP<br>RÁPIDO";
                     msj.style.fontSize = "30px";
+                    msj.className = "parpadeo-lento";
                     document.getElementById('pantalla-juego').classList.add('activa');
                 } else {
-                    mostrarMensajeEsperaMeta();
+                    modalLlegada.style.display = 'flex';
                 }
             }
             else if (estadoActual === 'podio') {
-                audioLobby.pause();
+                modalLlegada.style.display = 'none';
                 document.getElementById('pantalla-juego').classList.add('activa');
             }
         }
@@ -253,46 +257,49 @@
             
             if (ranking.includes(miEquipo) && estadoActual === 'carrera' && !yaCruzoMeta) {
                 yaCruzoMeta = true;
-                mostrarMensajeEsperaMeta();
+                document.getElementById('txt-meta-nombre').innerText = `EXCELENTE, ${miPila}`;
+                modalLlegada.style.display = 'flex';
+                document.getElementById('pantalla-juego').classList.remove('activa');
             }
 
             if (estadoActual === 'podio' && ranking.length > 0) {
                 if (ranking[0] === miEquipo) { 
-                    // EFECTO VICTORIA FLASH (10 Segundos)
+                    miEquipoGano = true;
                     zonaTap.className = "victoria-flash"; 
                     msj.innerHTML = "¡GANAMOS!"; 
-                    msj.classList.add("texto-rojo-inverso");
-                    msj.classList.remove("texto-blanco-puro");
+                    msj.className = "texto-rojo-inverso";
                     if(navigator.vibrate) navigator.vibrate([500, 200, 500, 200, 1000, 500, 2000]); 
                     
-                    // Transición a pantalla corporativa estática
                     timerFlash = setTimeout(() => {
-                        if(estadoActual === 'podio') {
+                        if(estadoActual === 'podio' && zonaTap.className !== "ruleta-ganador-modo") {
                             zonaTap.className = "victoria-estatica";
-                            msj.classList.remove("texto-rojo-inverso");
-                            msj.classList.add("texto-blanco-puro");
+                            msj.className = "texto-blanco-puro";
                         }
                     }, 10000);
 
                 } else { 
                     zonaTap.className = "derrota"; 
                     msj.innerHTML = `PUESTO #${ranking.indexOf(miEquipo) + 1}`; 
-                    msj.classList.remove("texto-rojo-inverso");
+                    msj.className = "";
                 }
             }
         });
 
-        function mostrarMensajeEsperaMeta() {
-            document.getElementById('pantalla-juego').classList.add('activa');
-            zonaTap.className = ""; 
-            
-            msj.innerHTML = `
-                <div class="caja-instrucciones" style="margin: 0 20px; border-color: #00ffcc; box-shadow: inset 0 0 15px rgba(0,255,204,0.3); animation: aparecer 0.3s ease-out;">
-                    <span style="font-size:20px; font-family:'Press Start 2P', cursive; color:#fff; text-shadow: 0 0 10px #00ffcc;">¡BIEN HECHO,<br>${miPila}!</span><br><br>
-                    <span style="font-size:14px; color:#ddd; font-family:'Arial Black'; line-height: 1.5;">Has cruzado la meta.<br><br>Mantente atento mientras el resto termina la carrera...</span>
-                </div>`;
-            msj.classList.remove('parpadeo-lento');
-        }
+        // REACCIÓN AL GANAR LA RULETA
+        onValue(ref(db, 'ganadorRuleta'), (snap) => {
+            const uidGanador = snap.val();
+            if(uidGanador && uidGanador === miID) {
+                // Secuestro total de pantalla: Eres el elegido
+                clearTimeout(timerFlash);
+                zonaTap.className = "ruleta-ganador-modo";
+                msj.innerHTML = `¡ERES EL<br>ELEGIDO!<br><br><span style="font-size:14px; color:#000;">PASA AL ESCENARIO</span>`;
+                msj.className = "texto-negro-inverso";
+                
+                // Vibración continua y sonido
+                if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200, 100, 1000, 500, 2000, 500, 2000]);
+                reproducirBeep(1000); setTimeout(()=>reproducirBeep(1200), 200); setTimeout(()=>reproducirBeep(1500), 400);
+            }
+        });
 
         zonaTap.addEventListener('touchstart', (e) => {
             e.preventDefault(); 
@@ -309,13 +316,9 @@
                 num.innerText = '+1';
                 const tamaño = Math.floor(Math.random() * (60 - 30 + 1)) + 30; 
                 num.style.fontSize = tamaño + 'px'; 
-                
                 const randX = Math.floor(Math.random() * 80) + 10;
                 const randY = Math.floor(Math.random() * 80) + 10;
-                
-                num.style.left = randX + '%'; 
-                num.style.top = randY + '%';
-                
+                num.style.left = randX + '%'; num.style.top = randY + '%';
                 zonaTap.appendChild(num); 
                 setTimeout(() => num.remove(), 500);
             }

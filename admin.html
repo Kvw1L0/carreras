@@ -6,10 +6,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         body { background: #0a0a0a; color: #fff; font-family: 'Arial Black', sans-serif; text-align: center; padding: 20px; }
-        .panel { background: rgba(255,255,255,0.05); border: 2px solid #EC0000; border-radius: 10px; padding: 20px; max-width: 800px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;}
-        h1 { font-family: 'Press Start 2P', cursive; font-size: 20px; color: #EC0000; margin-bottom: 20px; width: 100%;}
+        .panel { background: rgba(255,255,255,0.05); border: 2px solid #EC0000; border-radius: 10px; padding: 20px; max-width: 800px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;}
+        h1 { font-family: 'Press Start 2P', cursive; font-size: 20px; color: #EC0000; margin-bottom: 10px; width: 100%;}
         
-        .btn { padding: 15px; font-family: 'Press Start 2P', cursive; font-size: 12px; cursor: pointer; background: transparent; color: #fff; border: 2px solid #555; transition: 0.3s; width: 45%; border-radius: 5px;}
+        .btn { padding: 15px; font-family: 'Press Start 2P', cursive; font-size: 11px; cursor: pointer; background: transparent; color: #fff; border: 2px solid #555; transition: 0.3s; width: 47%; border-radius: 5px; box-sizing: border-box;}
         .btn:hover { background: #333; }
         .btn-primario { border-color: #00ffcc; color: #00ffcc; }
         .btn-primario:hover { background: #00ffcc; color: #000; }
@@ -19,11 +19,19 @@
         .btn-peligro:hover { background: #ff0055; color: #fff; }
         .btn-ruleta { border-color: #b026ff; color: #b026ff; }
         .btn-ruleta:hover { background: #b026ff; color: #fff; }
+        .btn-qa { border-color: #fff; color: #fff; }
 
-        .stats-box { width: 100%; background: #111; border: 1px solid #333; padding: 20px; border-radius: 8px; margin-bottom: 20px;}
-        .pin-display { font-size: 40px; font-family: 'Press Start 2P', cursive; color: #00ffcc; letter-spacing: 5px; margin: 10px 0;}
-        .team-stats { display: flex; justify-content: space-around; font-family: 'Press Start 2P', cursive; font-size: 10px; color: #aaa;}
-        .team-col span { display: block; font-size: 24px; color: #fff; margin-top: 10px; font-family: 'Arial Black';}
+        .stats-box { width: 100%; background: #111; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px;}
+        .pin-display { font-size: 35px; font-family: 'Press Start 2P', cursive; color: #00ffcc; letter-spacing: 5px; margin: 10px 0;}
+        .team-stats { display: flex; justify-content: space-around; font-family: 'Press Start 2P', cursive; font-size: 9px; color: #aaa; flex-wrap: wrap; gap: 10px;}
+        .team-col { width: 18%; background: #222; padding: 10px 0; border-radius: 5px; border-bottom: 3px solid #555;}
+        .team-col span { display: block; font-size: 22px; color: #fff; margin-top: 8px; font-family: 'Arial Black';}
+
+        /* Consola de Audio */
+        .audio-console { width: 100%; background: rgba(0,255,204,0.1); border: 1px solid #00ffcc; padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; box-sizing: border-box;}
+        .slider-container { width: 60%; display: flex; flex-direction: column; align-items: flex-start;}
+        .slider-container label { font-family: 'Press Start 2P', cursive; font-size: 10px; color: #00ffcc; margin-bottom: 10px;}
+        input[type=range] { width: 100%; accent-color: #00ffcc; }
     </style>
 </head>
 <body>
@@ -36,13 +44,28 @@
             <div class="team-stats" id="team-stats"></div>
         </div>
 
+        <!-- MÁSTER DE AUDIO BTL -->
+        <div class="audio-console">
+            <div class="slider-container">
+                <label>VOLUMEN MÁSTER TV: <span id="vol-val">70</span>%</label>
+                <input type="range" id="vol-slider" min="0" max="100" value="70" oninput="actualizarVolumenVisual()" onchange="enviarVolumenFirebase()">
+            </div>
+            <button class="btn btn-primario" style="width: 35%; padding: 10px;" onclick="testSonidoTV()">SOUNDCHECK</button>
+        </div>
+
         <button class="btn btn-primario" onclick="abrirSala()">1. CREAR NUEVA SALA (PIN)</button>
         <button class="btn btn-accion" onclick="mezclarEquipos()">2. MEZCLAR EQUIPOS</button>
-        <button class="btn btn-primario" onclick="iniciarCarrera()" style="width: 93%; font-size: 16px;">3. INICIAR CARRERA</button>
-        <button class="btn btn-accion" onclick="devolverLobby()">4. PAUSAR / VOLVER A LOBBY</button>
+        <button class="btn btn-primario" onclick="iniciarCarrera()" style="width: 100%; font-size: 14px;">3. INICIAR CARRERA</button>
+        
+        <button class="btn btn-accion" onclick="devolverLobby()">4. PAUSAR / LOBBY</button>
         <button class="btn btn-peligro" onclick="cerrarSala()">5. CERRAR SALA (EXPULSAR)</button>
-        <button class="btn" style="width: 45%; border-color: #aaa; color: #aaa;" onclick="forzarFinal()">6. FORZAR FINAL (TEST)</button>
-        <button class="btn btn-ruleta" style="width: 45%;" onclick="lanzarRuleta()">7. RULETA (GANADOR)</button>
+        
+        <button class="btn btn-ruleta" style="width: 100%; font-size: 14px;" onclick="lanzarRuleta()">6. SORTEAR GANADOR (RULETA)</button>
+        
+        <!-- ZONA QA / TEST -->
+        <h3 style="width: 100%; color: #666; font-size: 10px; font-family: 'Press Start 2P', cursive; margin: 10px 0 0 0; text-align: left;">ZONA DE PRUEBAS TÉCNICAS (QA):</h3>
+        <button class="btn btn-qa" onclick="forzarFinal()">FORZAR LLEGADA</button>
+        <button class="btn btn-qa" onclick="testLuces()">TEST ANIMACIÓN VICTORIA</button>
     </div>
 
     <script type="module">
@@ -55,9 +78,7 @@
         
         const NOMBRES_EQUIPOS = { 1: "M. JACKSON", 2: "F. MERCURY", 3: "SLASH", 4: "D. BOWIE", 5: "WINEHOUSE" };
 
-        onValue(ref(db, 'salaActiva'), (snap) => {
-            document.getElementById('display-pin').innerText = snap.val() || "----";
-        });
+        onValue(ref(db, 'salaActiva'), (snap) => { document.getElementById('display-pin').innerText = snap.val() || "----"; });
 
         onValue(ref(db, 'equipos'), (snap) => {
             const datos = snap.val() || {};
@@ -65,15 +86,22 @@
             let html = '';
             [1,2,3,4,5].forEach(id => {
                 const jgs = (datos[id] && datos[id].jugadores) ? Object.keys(datos[id].jugadores).length : 0;
-                html += `<div class="team-col">${NOMBRES_EQUIPOS[id]}<span>${jgs}</span></div>`;
+                let borderColor = jgs > 0 ? '#00ffcc' : '#555';
+                html += `<div class="team-col" style="border-bottom-color: ${borderColor}">${NOMBRES_EQUIPOS[id]}<span>${jgs}</span></div>`;
             });
             statsDiv.innerHTML = html;
         });
+
+        // Controles de Audio Máster
+        window.actualizarVolumenVisual = () => { document.getElementById('vol-val').innerText = document.getElementById('vol-slider').value; };
+        window.enviarVolumenFirebase = () => { set(ref(db, 'volumenGlobal'), document.getElementById('vol-slider').value / 100); };
+        window.testSonidoTV = () => { set(ref(db, 'triggerSoundcheck'), Date.now()); };
 
         window.abrirSala = () => {
             if(confirm("¿Crear una sala nueva? Esto borrará el juego actual.")) {
                 const pin = Math.floor(1000 + Math.random() * 9000).toString();
                 set(ref(db, 'salaActiva'), pin);
+                set(ref(db, 'ganadorRuleta'), null); // Limpiar ruleta previa
                 const inicial = {};
                 [1,2,3,4,5].forEach(id => { inicial[id] = { clicksTotales: 0, jugadores: null }; });
                 set(ref(db, 'equipos'), inicial);
@@ -92,9 +120,7 @@
                 let todosLosJugadores = [];
                 [1,2,3,4,5].forEach(id => {
                     if(datos[id].jugadores) {
-                        Object.entries(datos[id].jugadores).forEach(([uid, nombre]) => {
-                            todosLosJugadores.push({uid, nombre});
-                        });
+                        Object.entries(datos[id].jugadores).forEach(([uid, nombre]) => { todosLosJugadores.push({uid, nombre}); });
                     }
                 });
 
@@ -117,34 +143,17 @@
         };
 
         window.iniciarCarrera = () => {
-            if(confirm("¿Cerrar ingresos y comenzar cuenta regresiva?")) {
-                set(ref(db, 'clasificacion'), null); 
+            if(confirm("¿Comenzar cuenta regresiva en todas las pantallas?")) {
+                set(ref(db, 'clasificacion'), null); set(ref(db, 'ganadorRuleta'), null);
                 set(ref(db, 'estado'), 'cuenta_regresiva');
             }
         };
 
-        window.devolverLobby = () => {
-            if(confirm("¿Detener la carrera y devolver a todos a la sala de espera manteniendo equipos?")) {
-                set(ref(db, 'estado'), 'espera');
-            }
-        };
-
-        window.cerrarSala = () => {
-            if(confirm("¿Cerrar sala y expulsar a todos a la pantalla de inicio?")) {
-                set(ref(db, 'salaActiva'), null);
-                set(ref(db, 'estado'), 'cerrado');
-            }
-        };
-
-        window.forzarFinal = () => {
-            if(confirm("¿Acelerar a todos los equipos para que crucen la meta instantáneamente?")) {
-                set(ref(db, 'comandoForzarFinal'), Date.now());
-            }
-        };
-
-        window.lanzarRuleta = () => {
-            set(ref(db, 'triggerRuleta'), Date.now());
-        };
+        window.devolverLobby = () => { if(confirm("¿Devolver a todos a la sala de espera manteniendo equipos?")) set(ref(db, 'estado'), 'espera'); };
+        window.cerrarSala = () => { if(confirm("¿Expulsar a todos y reiniciar el sistema por completo?")) { set(ref(db, 'salaActiva'), null); set(ref(db, 'estado'), 'cerrado'); } };
+        window.forzarFinal = () => { if(confirm("¿Acelerar a todos los equipos para probar el cierre?")) set(ref(db, 'comandoForzarFinal'), Date.now()); };
+        window.testLuces = () => { if(confirm("¿Disparar la animación del ganador en la TV sin correr la carrera?")) set(ref(db, 'triggerTestVictoria'), Date.now()); };
+        window.lanzarRuleta = () => { if(confirm("¿Lanzar la ruleta en la TV para elegir a un ganador del equipo campeón?")) set(ref(db, 'triggerRuleta'), Date.now()); };
     </script>
 </body>
 </html>

@@ -16,18 +16,7 @@
         .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.1s linear, transform 1s ease-out, filter 1s; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .personaje img { display: block; height: auto; max-height: 12vh; width: auto; object-fit: contain; }
         
-        .linea-meta { 
-            position: absolute; 
-            left: 85vw; 
-            top: 25vh; 
-            bottom: 5vh; 
-            width: 8px; 
-            background: rgba(236,0,0,0.8); 
-            box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); 
-            z-index: 1; 
-            filter: blur(2px); 
-            transform: skewX(-8deg); 
-        } 
+        .linea-meta { position: absolute; left: 85vw; top: 25vh; bottom: 5vh; width: 8px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(2px); transform: skewX(-8deg); } 
         
         .efecto-tension { filter: saturate(1.5) contrast(1.2) brightness(0.8); }
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
@@ -36,23 +25,15 @@
         #pantalla-desbloqueo h1 { font-family: 'Press Start 2P', cursive; color: var(--neon-red); animation: pulso 1s infinite alternate; }
         
         #titulo-inicio { font-size: 6vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 20px var(--neon-red); position: absolute; top: 10vh; width: 100%; text-align: center; margin: 0; z-index: 101;}
-        
-        /* QR Gigante */
         #caja-qr-central { width: 40vw; height: 55vh; border: 4px dashed var(--neon-red); background: rgba(0,0,0,0.5); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 101; border-radius: 20px; backdrop-filter: blur(10px);}
         #pin-display { font-size: 8vh; font-family: 'Press Start 2P', cursive; color: #00ffcc; text-shadow: 0 0 20px #00ffcc; margin-bottom: 20px;}
         
         #nubes-nombres { position: absolute; top:0; left:0; width: 100vw; height: 100vh; overflow: hidden; z-index: 100;}
         .nombre-flotante { position: absolute; font-family: 'Press Start 2P', cursive; text-shadow: 2px 2px 0 #000, 0 0 10px rgba(255,255,255,0.2); white-space: nowrap; animation: flotar 5s infinite ease-in-out alternate;}
-        
-        @keyframes flotar { 
-            0% { transform: translate(0, 0) scale(1); opacity: 0.6;} 
-            50% { transform: translate(25px, -15px) scale(1.1); opacity: 1;} 
-            100% { transform: translate(-15px, 20px) scale(1); opacity: 0.6;} 
-        }
+        @keyframes flotar { 0% { transform: translate(0, 0) scale(1); opacity: 0.6;} 50% { transform: translate(25px, -15px) scale(1.1); opacity: 1;} 100% { transform: translate(-15px, 20px) scale(1); opacity: 0.6;} }
 
         #contador-tv { font-size: 40vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 50px var(--neon-red); display: none; z-index: 105; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}
         
-        /* Animación Final: Todo ESTRICTAMENTE CENTRADO */
         #spotlight-ganador { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100vw; height: 100vh; background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(236,0,0,0.4) 30%, transparent 60%); display: none; z-index: 50; flex-direction: column; justify-content: center; align-items: center;}
         #txt-ganador-epico { font-family: 'Press Start 2P', cursive; font-size: 5vh; color: #fff; text-shadow: 0 0 30px var(--neon-red), 0 0 60px var(--neon-red); margin-top: 5vh; text-align: center; line-height: 1.5; animation: rebote 1s ease-out;}
         @keyframes rebote { 0% { transform: translateY(100px); opacity: 0;} 50% { transform: translateY(-20px); opacity: 1;} 100% { transform: translateY(0); opacity: 1;} }
@@ -60,7 +41,10 @@
         #panel-ranking { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50vw; max-width: 800px; background: rgba(0,0,0,0.9); border: 2px solid var(--neon-red); border-radius: 15px; display: none; flex-direction: column; padding: 40px; z-index: 60; backdrop-filter: blur(10px);}
         #panel-ranking h2 { font-family: 'Press Start 2P', cursive; font-size: 4vh; color: #fff; text-align: center; margin-bottom: 40px; text-shadow: 0 0 10px var(--neon-red);}
         .fila-ranking { display: flex; justify-content: space-between; font-family: 'Press Start 2P', cursive; font-size: 3vh; color: #fff; margin-bottom: 25px; border-bottom: 1px dashed #333; padding-bottom: 15px;}
-        .fila-ranking:nth-child(2) { color: #ffd700; font-size: 4vh; text-shadow: 0 0 10px #ffd700;} 
+        
+        /* Bug del amarillo arreglado: Uso clase exclusiva para el líder */
+        .fila-primero { color: #ffd700; font-size: 4vh; text-shadow: 0 0 10px #ffd700; border-bottom: 2px solid #ffd700;} 
+        
         @keyframes aparecer { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
         
         #overlay-ruleta { background: rgba(5, 5, 5, 0.95); z-index: 105; }
@@ -69,6 +53,10 @@
         .ruleta-girando { opacity: 0.8; transform: scale(0.98); }
         .ruleta-ganador { color: var(--neon-red) !important; text-shadow: 0 0 40px var(--neon-red), 0 0 80px var(--neon-red) !important; animation: impactoGanador 0.5s ease-out forwards; }
         @keyframes impactoGanador { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1.05); } }
+        
+        /* Pantalla Limpia (Cerrado) */
+        #pantalla-limpia { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999; flex-direction: column; justify-content: center; align-items: center;}
+        #pantalla-limpia h2 { font-family: 'Press Start 2P', cursive; color: #333; font-size: 2vh;}
     </style>
 </head>
 <body>
@@ -77,17 +65,20 @@
         <h1>CLICK PARA INICIAR TV<br><br><span style="font-size: 2vh; color:#fff;">(Requerido para Audio)</span></h1>
     </div>
 
+    <!-- Limpieza total -->
+    <div id="pantalla-limpia">
+        <h2>ESPERANDO AL ADMINISTRADOR...</h2>
+    </div>
+
     <div id="pista-container">
         <div class="linea-meta"></div>
         <div id="zona-carriles"></div>
     </div>
     
-    <!-- Animaciones Centrales -->
     <div id="spotlight-ganador">
         <div id="sprite-ganador-gigante"></div>
         <div id="txt-ganador-epico"></div>
     </div>
-    
     <div id="panel-ranking">
         <h2>LEADERBOARD</h2>
         <div id="lista-ranking-final"></div>
@@ -99,7 +90,6 @@
         <div id="caja-qr-central">
             <span style="font-family: 'Arial Black'; font-size: 2vh; color: #aaa; margin-bottom: 10px;">PIN DE ACCESO</span>
             <div id="pin-display">----</div>
-            <!-- QR Gigante (35vh) -->
             <img src="qr.png" alt="Código QR" style="width: 35vh; height: 35vh; border-radius: 10px; object-fit: cover; background: #fff;">
         </div>
     </div>
@@ -126,7 +116,6 @@
             { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "69%", inicioX: 10, finX: 85, escala: 1.2, audioVictoria: "canciones/bowie.mp3" },
             { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "81%", inicioX: 6, finX: 85, escala: 1.5, audioVictoria: "canciones/winehouse.mp3" }
         ];
-
         const COLORES_ESTETICOS = ['#FFFFFF', '#EC0000', '#00FFCC', '#FFD700', '#FF0055'];
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
@@ -134,19 +123,44 @@
         let juegoActivo = false, clasificacion = [];
         const LIMITE_META = 85; 
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true;
-        const audioCarrera = new Audio('canciones/carrera.mp3'); audioCarrera.loop = true;
-        const audioDrumroll = new Audio('canciones/drumroll.mp3'); 
+        let volGlobal = 0.7; // Volumen por defecto
+        const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true; audioLobby.volume = volGlobal;
+        const audioCarrera = new Audio('canciones/carrera.mp3'); audioCarrera.loop = true; audioCarrera.volume = volGlobal;
+        const audioDrumroll = new Audio('canciones/drumroll.mp3'); audioDrumroll.volume = volGlobal;
         let audioGanadorActual = null;
 
-        function reproducirBeep(frecuencia) {
-            if(audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'square'; osc.frequency.setValueAtTime(frecuencia, audioCtx.currentTime); 
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        }
+        // Escucha Máster de Volumen
+        onValue(ref(db, 'volumenGlobal'), (snap) => {
+            const v = snap.val();
+            if(v !== null) {
+                volGlobal = v;
+                audioLobby.volume = volGlobal;
+                audioCarrera.volume = volGlobal;
+                audioDrumroll.volume = volGlobal;
+                if(audioGanadorActual) audioGanadorActual.volume = volGlobal;
+            }
+        });
+
+        // Soundcheck a los altavoces
+        let ignoreFirstSound = true;
+        onValue(ref(db, 'triggerSoundcheck'), (snap) => {
+            if(ignoreFirstSound) { ignoreFirstSound = false; return; }
+            if(snap.val()) {
+                audioDrumroll.currentTime = 0;
+                audioDrumroll.play().catch(e=>console.log(e));
+            }
+        });
+
+        // Test Luces / Animación Victoria
+        let ignoreFirstTestVic = true;
+        onValue(ref(db, 'triggerTestVictoria'), (snap) => {
+            if(ignoreFirstTestVic) { ignoreFirstTestVic = false; return; }
+            if(snap.val()) {
+                // Forzar ID 1 (M. Jackson) como ganador para la prueba
+                clasificacion = [1,2,3,4,5];
+                animacionFinalPodio();
+            }
+        });
 
         window.desbloquearSistema = () => {
             document.getElementById('pantalla-desbloqueo').style.display = 'none';
@@ -173,9 +187,7 @@
                     if(datosEq[eq.id] && datosEq[eq.id].jugadores) {
                         Object.values(datosEq[eq.id].jugadores).forEach(nombre => {
                             const span = document.createElement('div');
-                            span.className = 'nombre-flotante';
-                            span.innerText = nombre;
-                            
+                            span.className = 'nombre-flotante'; span.innerText = nombre;
                             span.style.color = COLORES_ESTETICOS[Math.floor(Math.random() * COLORES_ESTETICOS.length)];
                             
                             let x, y;
@@ -187,10 +199,8 @@
                             
                             span.style.left = x + 'vw'; span.style.top = y + 'vh';
                             span.style.fontSize = (1.5 + Math.random()*1.5) + 'vh';
-                            
                             span.style.animationDelay = (Math.random() * -5) + 's';
                             span.style.animationDuration = (4 + Math.random() * 4) + 's';
-                            
                             contenedorNombres.appendChild(span);
                         });
                     }
@@ -198,25 +208,34 @@
             }
         });
 
-        onValue(ref(db, 'salaActiva'), (snap) => {
-            document.getElementById('pin-display').innerText = snap.val() || "----";
-        });
+        onValue(ref(db, 'salaActiva'), (snap) => { document.getElementById('pin-display').innerText = snap.val() || "----"; });
 
         let ignoreFirstForzar = true;
         onValue(ref(db, 'comandoForzarFinal'), (snap) => {
             if(ignoreFirstForzar) { ignoreFirstForzar = false; return; }
             if(snap.val() && juegoActivo) {
-                EQUIPOS.forEach(eq => {
-                    if(!clasificacion.includes(eq.id)) { posiciones[eq.id] = 1000; }
-                });
+                EQUIPOS.forEach(eq => { if(!clasificacion.includes(eq.id)) posiciones[eq.id] = 1000; });
             }
         });
 
         onValue(ref(db, 'estado'), (snap) => {
             const estado = snap.val();
             
-            if (estado === 'espera') {
+            if(estado === 'cerrado') {
+                juegoActivo = false;
+                document.getElementById('overlay-inicio').style.display = 'none';
+                document.getElementById('spotlight-ganador').style.display = 'none';
+                document.getElementById('panel-ranking').style.display = 'none';
+                document.getElementById('overlay-ruleta').style.display = 'none';
+                document.getElementById('contador-tv').style.display = 'none';
+                
+                audioLobby.pause(); audioCarrera.pause(); if(audioGanadorActual) audioGanadorActual.pause();
+                
+                document.getElementById('pantalla-limpia').style.display = 'flex'; // Limpieza Total
+            }
+            else if (estado === 'espera') {
                 juegoActivo = false; clasificacion = []; 
+                document.getElementById('pantalla-limpia').style.display = 'none';
                 document.getElementById('pista-container').classList.remove('pista-oscura');
                 document.getElementById('spotlight-ganador').style.display = 'none';
                 document.getElementById('panel-ranking').style.display = 'none';
@@ -228,7 +247,6 @@
                         el.style.left = eq.inicioX + "vw"; 
                         el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))";
                         el.style.zIndex = "10";
-                        el.querySelector('img').style.transform = `scale(${eq.escala})`;
                     }
                     anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0;
                 });
@@ -242,6 +260,7 @@
 
             } 
             else if (estado === 'cuenta_regresiva') {
+                document.getElementById('pantalla-limpia').style.display = 'none';
                 document.getElementById('overlay-inicio').style.display = 'none';
                 const tv = document.getElementById('contador-tv'); tv.style.display = 'block';
                 audioLobby.pause(); audioLobby.currentTime = 0;
@@ -253,34 +272,28 @@
                 });
 
                 let num = 3; tv.innerText = num;
-                reproducirBeep(440);
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const beep = (f) => { const o=ctx.createOscillator(); const g=ctx.createGain(); o.type='square'; o.frequency.value=f; g.gain.setValueAtTime(volGlobal*0.5, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.1); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.1); };
+                beep(440);
+                
                 const int = setInterval(() => {
                     num--; 
-                    if(num > 0) {
-                        tv.innerText = num;
-                        reproducirBeep(440);
-                    } else { 
-                        clearInterval(int); tv.innerText = "GO!"; 
-                        reproducirBeep(880);
-                        setTimeout(() => { 
-                            tv.style.display = 'none';
-                            set(ref(db, 'estado'), 'carrera'); 
-                        }, 500); 
+                    if(num > 0) { tv.innerText = num; beep(440); } 
+                    else { 
+                        clearInterval(int); tv.innerText = "GO!"; beep(880);
+                        setTimeout(() => { tv.style.display = 'none'; set(ref(db, 'estado'), 'carrera'); }, 500); 
                     }
                 }, 1000);
             }
-            else if (estado === 'carrera') {
-                juegoActivo = true; 
-                audioCarrera.play();
-            }
+            else if (estado === 'carrera') { juegoActivo = true; audioCarrera.play(); }
         });
 
-        // Ruleta para un jugador del equipo ganador
+        // RULETA ESTRICTA: Sortea UID real y sube a Firebase
         let ignoreFirstRuleta = true;
         onValue(ref(db, 'triggerRuleta'), (snap) => {
             if(ignoreFirstRuleta) { ignoreFirstRuleta = false; return; }
             if(snap.val() && clasificacion.length > 0) {
-                document.getElementById('panel-ranking').style.display = 'none'; // Ocultar ranking temporalmente
+                document.getElementById('panel-ranking').style.display = 'none'; 
                 ejecutarRuletaDigital(clasificacion[0]); 
             }
         });
@@ -291,23 +304,28 @@
             overlayRuleta.style.display = 'flex';
             
             const equipoData = datosEq[idEquipoGanador];
-            let nombres = ["NADIE"]; 
-            if (equipoData && equipoData.jugadores) { nombres = Object.values(equipoData.jugadores); }
+            let arrayJugadores = [["NO_ID", "NADIE"]]; 
+            if (equipoData && equipoData.jugadores) { arrayJugadores = Object.entries(equipoData.jugadores); } // [[uid, nombre], ...]
             
             let tiempo = 0; const tiempoMaximo = 4000; const velocidadCambio = 60; 
             displayNombre.classList.add('ruleta-girando');
             
             const intervaloRuleta = setInterval(() => {
-                displayNombre.innerText = nombres[Math.floor(Math.random() * nombres.length)];
+                const randomVal = arrayJugadores[Math.floor(Math.random() * arrayJugadores.length)];
+                displayNombre.innerText = randomVal[1];
                 tiempo += velocidadCambio;
                 
                 if (tiempo >= tiempoMaximo) {
                     clearInterval(intervaloRuleta);
-                    displayNombre.innerText = nombres[Math.floor(Math.random() * nombres.length)];
+                    const ganadorFinal = arrayJugadores[Math.floor(Math.random() * arrayJugadores.length)];
+                    displayNombre.innerText = ganadorFinal[1];
+                    
+                    // Dispara reacción en el celular de ese jugador específico
+                    set(ref(db, 'ganadorRuleta'), ganadorFinal[0]);
+                    
                     displayNombre.classList.remove('ruleta-girando');
                     displayNombre.classList.add('ruleta-ganador');
                     
-                    // Retorno a la tabla de posiciones después de la ruleta
                     setTimeout(() => { 
                         overlayRuleta.style.display = 'none'; 
                         document.getElementById('panel-ranking').style.display = 'flex';
@@ -329,9 +347,7 @@
                 const clicksActuales = data.clicksTotales || 0;
                 const nuevosClicks = clicksActuales - anteriorClicks[id];
                 
-                if (nuevosClicks > 0) {
-                    posiciones[id] += (nuevosClicks / divisor) * 5; 
-                }
+                if (nuevosClicks > 0) { posiciones[id] += (nuevosClicks / divisor) * 5; }
                 anteriorClicks[id] = clicksActuales; 
 
                 const progreso = Math.min(posiciones[id] / 1000, 1);
@@ -343,41 +359,36 @@
                 if (posiciones[id] >= 1000) {
                     clasificacion.push(id);
                     set(ref(db, 'clasificacion'), clasificacion); 
-                    
                     if(el) el.style.filter = "drop-shadow(0 0 20px #fff)"; 
                     
                     if (clasificacion.length === 5) {
                         juegoActivo = false; 
                         set(ref(db, 'ganadorAbsoluto'), clasificacion[0]);
-                        
                         audioCarrera.pause(); audioCarrera.currentTime = 0;
-                        audioDrumroll.play().catch(e=>console.log(e)); 
-                        
+                        audioDrumroll.currentTime = 0; audioDrumroll.play().catch(e=>console.log(e)); 
                         setTimeout(() => { animacionFinalPodio(); }, 3000); 
                     }
                 }
             });
         }, 100);
 
-        // Secuencia estricta y centrada
         function animacionFinalPodio() {
             set(ref(db, 'estado'), 'podio');
             document.getElementById('pista-container').classList.add('pista-oscura');
             
-            const idGanador = clasificacion[0];
+            const idGanador = clasificacion[0] || 1;
             const eqGanador = EQUIPOS.find(e => e.id === idGanador);
             
             const spotlight = document.getElementById('spotlight-ganador');
             spotlight.style.display = 'flex';
             
-            // Imagen central gigante
             document.getElementById('sprite-ganador-gigante').innerHTML = `<img src="${eqGanador.asset}" style="height: 50vh; filter: drop-shadow(0 0 30px #fff);">`;
             document.getElementById('txt-ganador-epico').innerHTML = `¡${eqGanador.nombre} GANA<br>EL 1ER LUGAR!`;
             
             audioGanadorActual = new Audio(eqGanador.audioVictoria);
+            audioGanadorActual.volume = volGlobal;
             audioGanadorActual.play().catch(e=>console.log(e));
 
-            // A los 5 segundos, se oculta el mono y entra la tabla central
             setTimeout(() => {
                 spotlight.style.display = 'none';
                 
@@ -386,7 +397,9 @@
                 lista.innerHTML = '';
                 clasificacion.forEach((id, idx) => {
                     const nom = EQUIPOS.find(e => e.id === id).nombre;
-                    lista.innerHTML += `<div class="fila-ranking"><span>#${idx+1}</span> <span>${nom}</span></div>`;
+                    // FIX RANKING: Solo el primero lleva clase especial oro
+                    const claseCss = (idx === 0) ? 'fila-ranking fila-primero' : 'fila-ranking';
+                    lista.innerHTML += `<div class="${claseCss}"><span>#${idx+1}</span> <span>${nom}</span></div>`;
                 });
                 
                 panel.style.display = 'flex';
