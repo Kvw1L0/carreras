@@ -36,7 +36,9 @@
         #pantalla-desbloqueo h1 { font-family: 'Press Start 2P', cursive; color: var(--neon-red); animation: pulso 1s infinite alternate; }
         
         #titulo-inicio { font-size: 6vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 20px var(--neon-red); position: absolute; top: 10vh; width: 100%; text-align: center; margin: 0; z-index: 101;}
-        #caja-qr-central { width: 30vw; height: 40vh; border: 4px dashed var(--neon-red); background: rgba(0,0,0,0.5); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 101; border-radius: 20px; backdrop-filter: blur(10px);}
+        
+        /* Contenedor adaptado para el QR gigante */
+        #caja-qr-central { width: 35vw; height: 50vh; border: 4px dashed var(--neon-red); background: rgba(0,0,0,0.5); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 101; border-radius: 20px; backdrop-filter: blur(10px);}
         #pin-display { font-size: 8vh; font-family: 'Press Start 2P', cursive; color: #00ffcc; text-shadow: 0 0 20px #00ffcc; margin-bottom: 20px;}
         
         #nubes-nombres { position: absolute; top:0; left:0; width: 100vw; height: 100vh; overflow: hidden; z-index: 100;}
@@ -87,7 +89,8 @@
         <div id="caja-qr-central">
             <span style="font-family: 'Arial Black'; font-size: 2vh; color: #aaa; margin-bottom: 10px;">PIN DE ACCESO</span>
             <div id="pin-display">----</div>
-            <img src="qr.png" alt="Código QR" style="width: 15vh; height: 15vh; border-radius: 10px; object-fit: cover; background: #fff;">
+            <!-- QR Aumentado en 80% (de 15vh a 27vh) -->
+            <img src="qr.png" alt="Código QR" style="width: 27vh; height: 27vh; border-radius: 10px; object-fit: cover; background: #fff;">
         </div>
     </div>
 
@@ -109,7 +112,6 @@
             { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "81%", inicioX: 6, finX: 85, escala: 1.5, audioVictoria: "canciones/winehouse.mp3" }
         ];
 
-        // Paleta de colores estéticos y corporativos
         const COLORES_ESTETICOS = ['#FFFFFF', '#EC0000', '#00FFCC', '#FFD700', '#FF0055'];
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
@@ -159,7 +161,6 @@
                             span.className = 'nombre-flotante';
                             span.innerText = nombre;
                             
-                            // Asignar color aleatorio
                             span.style.color = COLORES_ESTETICOS[Math.floor(Math.random() * COLORES_ESTETICOS.length)];
                             
                             let x, y;
@@ -172,7 +173,6 @@
                             span.style.left = x + 'vw'; span.style.top = y + 'vh';
                             span.style.fontSize = (1.5 + Math.random()*1.5) + 'vh';
                             
-                            // Tiempos aleatorios para que la animación sea orgánica
                             span.style.animationDelay = (Math.random() * -5) + 's';
                             span.style.animationDuration = (4 + Math.random() * 4) + 's';
                             
@@ -185,6 +185,17 @@
 
         onValue(ref(db, 'salaActiva'), (snap) => {
             document.getElementById('pin-display').innerText = snap.val() || "----";
+        });
+
+        // Trigger forzado del Admin para QA
+        let ignoreFirstForzar = true;
+        onValue(ref(db, 'comandoForzarFinal'), (snap) => {
+            if(ignoreFirstForzar) { ignoreFirstForzar = false; return; }
+            if(snap.val() && juegoActivo) {
+                EQUIPOS.forEach(eq => {
+                    if(!clasificacion.includes(eq.id)) { posiciones[eq.id] = 1000; }
+                });
+            }
         });
 
         onValue(ref(db, 'estado'), (snap) => {

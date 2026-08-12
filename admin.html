@@ -41,6 +41,7 @@
         <button class="btn btn-primario" onclick="iniciarCarrera()" style="width: 93%; font-size: 16px;">3. INICIAR CARRERA</button>
         <button class="btn btn-accion" onclick="devolverLobby()">4. PAUSAR / VOLVER A LOBBY</button>
         <button class="btn btn-peligro" onclick="cerrarSala()">5. CERRAR SALA (EXPULSAR)</button>
+        <button class="btn" style="width: 93%; border-color: #aaa; color: #aaa;" onclick="forzarFinal()">6. FORZAR FINAL (TEST)</button>
     </div>
 
     <script type="module">
@@ -132,7 +133,13 @@
                 set(ref(db, 'salaActiva'), null);
                 set(ref(db, 'estado'), 'cerrado');
             }
-        }
+        };
+
+        window.forzarFinal = () => {
+            if(confirm("¿Acelerar a todos los equipos para que crucen la meta instantáneamente? (Útil para pruebas)")) {
+                set(ref(db, 'comandoForzarFinal'), Date.now());
+            }
+        };
     </script>
 </body>
 </html>
