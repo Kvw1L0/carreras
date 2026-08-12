@@ -74,7 +74,6 @@
         const zonaTap = document.getElementById('zona-tap'); 
         const msj = document.getElementById('mensaje-tap');
         
-        // Sonidos
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true;
         
@@ -105,7 +104,6 @@
             }
         };
 
-        // MÁQUINA DE ESTADOS ESTRICTA
         onValue(ref(db, 'estado'), (snapshot) => {
             estadoActual = snapshot.val() || 'espera';
             evaluarPantalla();
@@ -121,7 +119,7 @@
             if(estadoActual === 'espera') {
                 textoEspera.innerText = "Esperando inicio de carrera...";
                 document.getElementById('pantalla-espera').classList.add('activa');
-                audioLobby.play().catch(e=>console.log(e)); // Música de espera en el celular
+                audioLobby.play().catch(e=>console.log(e));
             } 
             else if (estadoActual === 'cuenta_regresiva') {
                 textoEspera.innerText = "¡PREPARADOS!...";

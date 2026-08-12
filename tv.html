@@ -10,8 +10,7 @@
         #zona-carriles { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
         .carril { position: absolute; width: 100%; height: 12vh; display: flex; align-items: center; transform: translateY(-50%); }
         
-        /* Ajuste estricto de Imágenes */
-        .personaje { position: absolute; left: 0; height: 100%; display: flex; align-items: center; transition: left 0.1s linear; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
+        .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.1s linear; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .personaje img { display: block; height: auto; max-height: 12vh; width: auto; object-fit: contain; }
         
         .meta { display: none; } 
@@ -36,7 +35,6 @@
         
         .puesto { font-size: 3vh; font-family: 'Press Start 2P', cursive; margin: 15px; padding: 20px 40px; background: rgba(236,0,0,0.2); border: 2px solid var(--neon-red); width: 70%; display: flex; justify-content: space-between; color: white; align-items: center; box-shadow: 0 0 15px rgba(236,0,0,0.5); }
         
-        /* Lista de conectados */
         #lista-jugadores { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; max-width: 80%; margin-top: 40px; max-height: 40vh; overflow: hidden;}
         .tag-jugador { background: rgba(255,255,255,0.1); border: 1px solid var(--neon-red); padding: 10px 20px; border-radius: 8px; font-family: 'Press Start 2P', cursive; font-size: 1.5vh; color: #fff; }
     </style>
@@ -75,20 +73,19 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        // CORRECCIÓN: .png 
+        // Coordenadas Lerp (2.5D) integradas para corregir la perspectiva
         const EQUIPOS = [
-            { id: 1, nombre: "M. JACKSON", asset: "jackson.png", posicionY: "32%", audioVictoria: "canciones/jackson.mp3" },
-            { id: 2, nombre: "F. MERCURY", asset: "mercury.png", posicionY: "48%", audioVictoria: "canciones/mercury.mp3" },
-            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "64%", audioVictoria: "canciones/slash.mp3" },
-            { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "78%", audioVictoria: "canciones/bowie.mp3" },
-            { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "92%", audioVictoria: "canciones/winehouse.mp3" }
+            { id: 1, nombre: "M. JACKSON", asset: "jackson.png", posicionY: "48%", inicioX: 18, finX: 85, audioVictoria: "canciones/jackson.mp3" },
+            { id: 2, nombre: "F. MERCURY", asset: "mercury.png", posicionY: "60%", inicioX: 13, finX: 85, audioVictoria: "canciones/mercury.mp3" },
+            { id: 3, nombre: "SLASH", asset: "slash.png", posicionY: "72%", inicioX: 8, finX: 85, audioVictoria: "canciones/slash.mp3" },
+            { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "84%", inicioX: 4, finX: 85, audioVictoria: "canciones/bowie.mp3" },
+            { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "95%", inicioX: 0, finX: 85, audioVictoria: "canciones/winehouse.mp3" }
         ];
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
         let snapshotJugadores = {}; 
         let juegoActivo = false, clasificacion = [];
         let factorVel = 1, enTension = false;
-        const LIMITE_IZQUIERDO_META = 85; 
 
         const audioLobby = new Audio('canciones/lobby.mp3'); audioLobby.loop = true;
         const audioCarrera = new Audio('canciones/carrera.mp3'); audioCarrera.loop = true;
@@ -104,12 +101,12 @@
         EQUIPOS.forEach((eq) => {
             const carril = document.createElement('div');
             carril.className = 'carril'; carril.style.top = eq.posicionY; 
-            carril.innerHTML = `<div class="personaje" id="p-${eq.id}"><img src="${eq.asset}" alt="${eq.nombre}"></div>`;
+            // Se posicionan inicialmente en su marca (eq.inicioX)
+            carril.innerHTML = `<div class="personaje" id="p-${eq.id}" style="left: ${eq.inicioX}vw;"><img src="${eq.asset}" alt="${eq.nombre}"></div>`;
             zonaCarriles.appendChild(carril);
             anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0; 
         });
 
-        // Actualización de jugadores conectados en pantalla
         onValue(ref(db, 'equipos'), (snap) => { 
             datosEq = snap.val() || {}; 
             if(document.getElementById('overlay-inicio').style.display !== 'none') {
@@ -121,7 +118,6 @@
             }
         });
 
-        // MÁQUINA DE ESTADOS EN TV
         onValue(ref(db, 'estado'), (snap) => {
             const estado = snap.val();
             
@@ -129,7 +125,10 @@
                 juegoActivo = false; clasificacion = []; factorVel = 1; enTension = false;
                 EQUIPOS.forEach(eq => {
                     const el = document.getElementById(`p-${eq.id}`);
-                    if(el) { el.style.left = "0vw"; el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))"; }
+                    if(el) { 
+                        el.style.left = eq.inicioX + "vw"; // Reset Lerp
+                        el.style.filter = "drop-shadow(0 0 15px rgba(255,255,255,0.3))"; 
+                    }
                     anteriorClicks[eq.id] = 0; posiciones[eq.id] = 0;
                 });
                 
@@ -154,7 +153,6 @@
                 const tv = document.getElementById('contador-tv'); tv.style.display = 'block';
                 audioLobby.pause(); audioLobby.currentTime = 0;
                 
-                // BLINDAJE MATEMÁTICO: Congelamos los clicks históricos justo antes de correr
                 EQUIPOS.forEach(eq => {
                     const data = datosEq[eq.id] || {};
                     snapshotJugadores[eq.id] = (data.jugadores) ? Object.keys(data.jugadores).length : 0;
@@ -233,9 +231,12 @@
                     }
                     anteriorClicks[id] = clicksActuales; 
 
-                    const visualLeft = (posiciones[id] / 1000) * LIMITE_IZQUIERDO_META;
+                    // FÓRMULA LERP (Interpolación Matemática para perspectiva 2.5D)
+                    const progreso = Math.min(posiciones[id] / 1000, 1);
+                    const visualLeft = eq.inicioX + (progreso * (eq.finX - eq.inicioX));
+
                     const el = document.getElementById(`p-${id}`);
-                    if(el) el.style.left = Math.min(visualLeft, 95) + "vw";
+                    if(el) el.style.left = visualLeft + "vw";
 
                     if (posiciones[id] >= 900 && posiciones[id] < 1000) equiposEnZonaTension.push(id);
 
