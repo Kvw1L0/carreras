@@ -120,6 +120,11 @@
                     }
                 });
 
+                if(todosLosJugadores.length === 0) {
+                    alert("No hay jugadores en la sala para mezclar.");
+                    return;
+                }
+
                 for (let i = todosLosJugadores.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [todosLosJugadores[i], todosLosJugadores[j]] = [todosLosJugadores[j], todosLosJugadores[i]];
@@ -135,6 +140,9 @@
 
                 set(ref(db, 'equipos'), nuevosEquipos);
                 set(ref(db, 'comandoResetCelulares'), Date.now()); 
+                
+                // Feedback visual de que sí funcionó internamente
+                alert("¡Jugadores reasignados con éxito! Los números pueden verse iguales porque se distribuyen de forma perfectamente equitativa.");
             }
         };
 

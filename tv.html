@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
     <title>TV Display - Legends Sprint</title>
+    <!-- Script de Confeti para la explosión BTL -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         :root { --neon-red: #EC0000; --dark-bg: #050505; }
@@ -13,12 +15,11 @@
         #zona-carriles { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
         .carril { position: absolute; width: 100%; height: 12vh; display: flex; align-items: center; transform: translateY(-50%); }
         
-        /* MOVIMIENTO FLUIDO: Interpolación CSS de 0.4s alineada al batching de celulares */
         .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.4s linear, transform 1s ease-out, filter 1s; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .personaje img { display: block; height: auto; max-height: 12vh; width: auto; object-fit: contain; }
         
-        /* META: Totalmente vertical (sin skewX) anclada matemáticamente a 85vw */
-        .linea-meta { position: absolute; left: 85vw; top: 25vh; bottom: 0vh; width: 6px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(1px); } 
+        /* Línea de Meta Corregida visualmente al borde de la pista */
+        .linea-meta { position: absolute; left: 85vw; top: 46vh; bottom: 0vh; width: 6px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(1px); } 
         
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
         
@@ -112,7 +113,7 @@
             { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "69%", inicioX: 10, finX: 85, escala: 1.2, audioVictoria: "canciones/bowie.mp3" },
             { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "81%", inicioX: 6, finX: 85, escala: 1.5, audioVictoria: "canciones/winehouse.mp3" }
         ];
-        const COLORES_ESTETICOS = ['#FFFFFF', '#EC0000', '#FFD700', '#FF0055']; // Eliminado #00ffcc
+        const COLORES_ESTETICOS = ['#FFFFFF', '#EC0000', '#FFD700', '#FF0055']; 
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
         let snapshotJugadores = {}; 
@@ -125,6 +126,16 @@
         const audioCarrera = new Audio('canciones/carrera.mp3'); audioCarrera.loop = true; audioCarrera.volume = volGlobal;
         const audioDrumroll = new Audio('canciones/drumroll.mp3'); audioDrumroll.volume = volGlobal;
         let audioGanadorActual = null;
+
+        function lanzarConfeti() {
+            var duration = 5 * 1000;
+            var end = Date.now() + duration;
+            (function frame() {
+                confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#EC0000', '#FFFFFF', '#FFD700'] });
+                confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#EC0000', '#FFFFFF', '#FFD700'] });
+                if (Date.now() < end) { requestAnimationFrame(frame); }
+            }());
+        }
 
         onValue(ref(db, 'volumenGlobal'), (snap) => {
             const v = snap.val();
@@ -385,6 +396,9 @@
             audioGanadorActual = new Audio(eqGanador.audioVictoria);
             audioGanadorActual.volume = volGlobal;
             audioGanadorActual.play().catch(e=>console.log(e));
+
+            // ¡PIROTECNIA DIGITAL! (Confeti)
+            lanzarConfeti();
 
             setTimeout(() => {
                 spotlight.style.display = 'none';
