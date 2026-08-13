@@ -13,11 +13,12 @@
         #zona-carriles { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
         .carril { position: absolute; width: 100%; height: 12vh; display: flex; align-items: center; transform: translateY(-50%); }
         
-        /* TRANSICIÓN FLUIDA DE 0.4s (Sincronizada con el Batching del Celular) */
+        /* TRANSICIÓN FLUIDA DE 0.4s (Sincronizada con el Batching del Celular para evitar saltos) */
         .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.4s linear, transform 1s ease-out, filter 1s; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .personaje img { display: block; height: auto; max-height: 12vh; width: auto; object-fit: contain; }
         
-        .linea-meta { position: absolute; left: 85vw; top: 25vh; bottom: 5vh; width: 8px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(2px); transform: skewX(-8deg); } 
+        /* Línea de meta: Sin skew, perfectamente vertical alineada al 85vw matemático */
+        .linea-meta { position: absolute; left: 85vw; top: 35vh; bottom: 0vh; width: 6px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(1px); } 
         
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
         
@@ -116,7 +117,7 @@
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
         let snapshotJugadores = {}; 
         let juegoActivo = false, clasificacion = [];
-        let tiempoInicio = 0, tiemposFinales = {}; // Cronómetro
+        let tiempoInicio = 0, tiemposFinales = {}; 
         const LIMITE_META = 85; 
 
         let volGlobal = 0.7; 
@@ -273,12 +274,11 @@
             }
             else if (estado === 'carrera') { 
                 juegoActivo = true; 
-                if(tiempoInicio === 0) tiempoInicio = Date.now(); // Arranca Cronómetro
+                if(tiempoInicio === 0) tiempoInicio = Date.now(); 
                 audioCarrera.play(); 
             }
         });
 
-        // Seguro contra equipos vacíos en la ruleta
         let ignoreFirstRuleta = true;
         onValue(ref(db, 'triggerRuleta'), (snap) => {
             if(ignoreFirstRuleta) { ignoreFirstRuleta = false; return; }
@@ -298,7 +298,7 @@
             if (equipoData && equipoData.jugadores && Object.keys(equipoData.jugadores).length > 0) { 
                 arrayJugadores = Object.entries(equipoData.jugadores); 
             } else {
-                // Seguro de Fallos (Para QA/Pruebas): Sortea entre TODOS los participantes de la sala
+                // Seguro de Fallos
                 Object.values(datosEq).forEach(eq => { if(eq.jugadores) arrayJugadores.push(...Object.entries(eq.jugadores)); });
                 if(arrayJugadores.length === 0) arrayJugadores = [["NO_ID", "NADIE EN LA SALA"]];
             }
@@ -353,7 +353,6 @@
 
                 if (posiciones[id] >= 1000) {
                     clasificacion.push(id);
-                    // Registrar Tiempo Oficial
                     tiemposFinales[id] = ((Date.now() - tiempoInicio) / 1000).toFixed(2);
                     set(ref(db, 'clasificacion'), clasificacion); 
                     
@@ -364,7 +363,8 @@
                         set(ref(db, 'ganadorAbsoluto'), clasificacion[0]);
                         audioCarrera.pause(); audioCarrera.currentTime = 0;
                         audioDrumroll.currentTime = 0; audioDrumroll.play().catch(e=>console.log(e)); 
-                        // Espera 4 Segundos antes de revelar
+                        
+                        // Espera 4 Segundos antes de revelar (Mantiene suspenso)
                         setTimeout(() => { animacionFinalPodio(); }, 4000); 
                     }
                 }
@@ -398,7 +398,7 @@
                     const nom = EQUIPOS.find(e => e.id === id).nombre;
                     const tiempo = tiemposFinales[id] ? tiemposFinales[id] + "s" : "--";
                     const claseCss = (idx === 0) ? 'fila-ranking fila-primero' : 'fila-ranking';
-                    // Se añadió el tiempo al final de la fila
+                    
                     lista.innerHTML += `<div class="${claseCss}"><span style="width: 10%;">#${idx+1}</span> <span style="flex-grow: 1; text-align: left; padding-left: 20px;">${nom}</span> <span style="color: #aaa; font-family: 'Arial Black'; font-size: 0.8em;">${tiempo}</span></div>`;
                 });
                 
