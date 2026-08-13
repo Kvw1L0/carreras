@@ -13,12 +13,12 @@
         #zona-carriles { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
         .carril { position: absolute; width: 100%; height: 12vh; display: flex; align-items: center; transform: translateY(-50%); }
         
-        /* TRANSICIÓN FLUIDA DE 0.4s (Sincronizada con el Batching del Celular para evitar saltos) */
+        /* MOVIMIENTO FLUIDO: Interpolación CSS de 0.4s alineada al batching de celulares */
         .personaje { position: absolute; height: 100%; display: flex; align-items: center; transition: left 0.4s linear, transform 1s ease-out, filter 1s; z-index: 10; filter: drop-shadow(0 0 15px rgba(255,255,255,0.3)); }
         .personaje img { display: block; height: auto; max-height: 12vh; width: auto; object-fit: contain; }
         
-        /* Línea de meta: Sin skew, perfectamente vertical alineada al 85vw matemático */
-        .linea-meta { position: absolute; left: 85vw; top: 35vh; bottom: 0vh; width: 6px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(1px); } 
+        /* META: Totalmente vertical (sin skewX) anclada matemáticamente a 85vw */
+        .linea-meta { position: absolute; left: 85vw; top: 25vh; bottom: 0vh; width: 6px; background: rgba(236,0,0,0.8); box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red); z-index: 1; filter: blur(1px); } 
         
         .overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(5, 5, 5, 0.9); display:none; flex-direction:column; justify-content:center; align-items:center; z-index:100; text-align: center; backdrop-filter: blur(5px); }
         
@@ -27,7 +27,7 @@
         
         #titulo-inicio { font-size: 6vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 20px var(--neon-red); position: absolute; top: 10vh; width: 100%; text-align: center; margin: 0; z-index: 101;}
         #caja-qr-central { width: 40vw; height: 55vh; border: 4px dashed var(--neon-red); background: rgba(0,0,0,0.5); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 101; border-radius: 20px; backdrop-filter: blur(10px);}
-        #pin-display { font-size: 8vh; font-family: 'Press Start 2P', cursive; color: #00ffcc; text-shadow: 0 0 20px #00ffcc; margin-bottom: 20px;}
+        #pin-display { font-size: 8vh; font-family: 'Press Start 2P', cursive; color: #fff; text-shadow: 0 0 20px #fff; margin-bottom: 20px;}
         
         #nubes-nombres { position: absolute; top:0; left:0; width: 100vw; height: 100vh; overflow: hidden; z-index: 100;}
         .nombre-flotante { position: absolute; font-family: 'Press Start 2P', cursive; text-shadow: 2px 2px 0 #000, 0 0 10px rgba(255,255,255,0.2); white-space: nowrap; animation: flotar 5s infinite ease-in-out alternate;}
@@ -112,7 +112,7 @@
             { id: 4, nombre: "D. BOWIE", asset: "bowie.png", posicionY: "69%", inicioX: 10, finX: 85, escala: 1.2, audioVictoria: "canciones/bowie.mp3" },
             { id: 5, nombre: "A. WINEHOUSE", asset: "winehouse.png", posicionY: "81%", inicioX: 6, finX: 85, escala: 1.5, audioVictoria: "canciones/winehouse.mp3" }
         ];
-        const COLORES_ESTETICOS = ['#FFFFFF', '#EC0000', '#00FFCC', '#FFD700', '#FF0055'];
+        const COLORES_ESTETICOS = ['#FFFFFF', '#EC0000', '#FFD700', '#FF0055']; // Eliminado #00ffcc
 
         let datosEq = {}, anteriorClicks = {}, posiciones = {};
         let snapshotJugadores = {}; 
@@ -298,7 +298,6 @@
             if (equipoData && equipoData.jugadores && Object.keys(equipoData.jugadores).length > 0) { 
                 arrayJugadores = Object.entries(equipoData.jugadores); 
             } else {
-                // Seguro de Fallos
                 Object.values(datosEq).forEach(eq => { if(eq.jugadores) arrayJugadores.push(...Object.entries(eq.jugadores)); });
                 if(arrayJugadores.length === 0) arrayJugadores = [["NO_ID", "NADIE EN LA SALA"]];
             }
@@ -364,7 +363,6 @@
                         audioCarrera.pause(); audioCarrera.currentTime = 0;
                         audioDrumroll.currentTime = 0; audioDrumroll.play().catch(e=>console.log(e)); 
                         
-                        // Espera 4 Segundos antes de revelar (Mantiene suspenso)
                         setTimeout(() => { animacionFinalPodio(); }, 4000); 
                     }
                 }

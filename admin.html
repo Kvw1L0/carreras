@@ -11,27 +11,26 @@
         
         .btn { padding: 15px; font-family: 'Press Start 2P', cursive; font-size: 11px; cursor: pointer; background: transparent; color: #fff; border: 2px solid #555; transition: 0.3s; width: 47%; border-radius: 5px; box-sizing: border-box;}
         .btn:hover { background: #333; }
-        .btn-primario { border-color: #00ffcc; color: #00ffcc; }
-        .btn-primario:hover { background: #00ffcc; color: #000; }
+        .btn-primario { border-color: #fff; color: #fff; }
+        .btn-primario:hover { background: #fff; color: #000; }
         .btn-accion { border-color: #ffaa00; color: #ffaa00; }
         .btn-accion:hover { background: #ffaa00; color: #000; }
         .btn-peligro { border-color: #ff0055; color: #ff0055; }
         .btn-peligro:hover { background: #ff0055; color: #fff; }
-        .btn-ruleta { border-color: #b026ff; color: #b026ff; }
-        .btn-ruleta:hover { background: #b026ff; color: #fff; }
-        .btn-qa { border-color: #fff; color: #fff; }
+        .btn-ruleta { border-color: #FFD700; color: #FFD700; }
+        .btn-ruleta:hover { background: #FFD700; color: #000; }
+        .btn-qa { border-color: #888; color: #888; }
 
         .stats-box { width: 100%; background: #111; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px;}
-        .pin-display { font-size: 35px; font-family: 'Press Start 2P', cursive; color: #00ffcc; letter-spacing: 5px; margin: 10px 0;}
+        .pin-display { font-size: 35px; font-family: 'Press Start 2P', cursive; color: #fff; letter-spacing: 5px; margin: 10px 0; text-shadow: 0 0 10px #fff;}
         .team-stats { display: flex; justify-content: space-around; font-family: 'Press Start 2P', cursive; font-size: 9px; color: #aaa; flex-wrap: wrap; gap: 10px;}
         .team-col { width: 18%; background: #222; padding: 10px 0; border-radius: 5px; border-bottom: 3px solid #555;}
         .team-col span { display: block; font-size: 22px; color: #fff; margin-top: 8px; font-family: 'Arial Black';}
 
-        /* Consola de Audio */
-        .audio-console { width: 100%; background: rgba(0,255,204,0.1); border: 1px solid #00ffcc; padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; box-sizing: border-box;}
+        .audio-console { width: 100%; background: rgba(255,255,255,0.1); border: 1px solid #fff; padding: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; box-sizing: border-box;}
         .slider-container { width: 60%; display: flex; flex-direction: column; align-items: flex-start;}
-        .slider-container label { font-family: 'Press Start 2P', cursive; font-size: 10px; color: #00ffcc; margin-bottom: 10px;}
-        input[type=range] { width: 100%; accent-color: #00ffcc; }
+        .slider-container label { font-family: 'Press Start 2P', cursive; font-size: 10px; color: #fff; margin-bottom: 10px;}
+        input[type=range] { width: 100%; accent-color: #EC0000; }
     </style>
 </head>
 <body>
@@ -44,25 +43,23 @@
             <div class="team-stats" id="team-stats"></div>
         </div>
 
-        <!-- MÁSTER DE AUDIO BTL -->
         <div class="audio-console">
             <div class="slider-container">
                 <label>VOLUMEN MÁSTER TV: <span id="vol-val">70</span>%</label>
                 <input type="range" id="vol-slider" min="0" max="100" value="70" oninput="actualizarVolumenVisual()" onchange="enviarVolumenFirebase()">
             </div>
-            <button class="btn btn-primario" style="width: 35%; padding: 10px;" onclick="testSonidoTV()">SOUNDCHECK</button>
+            <button class="btn btn-primario" style="width: 35%; padding: 10px; border-color: #EC0000; color: #EC0000;" onclick="testSonidoTV()">SOUNDCHECK</button>
         </div>
 
         <button class="btn btn-primario" onclick="abrirSala()">1. CREAR NUEVA SALA (PIN)</button>
         <button class="btn btn-accion" onclick="mezclarEquipos()">2. MEZCLAR EQUIPOS</button>
-        <button class="btn btn-primario" onclick="iniciarCarrera()" style="width: 100%; font-size: 14px;">3. INICIAR CARRERA</button>
+        <button class="btn btn-primario" onclick="iniciarCarrera()" style="width: 100%; font-size: 14px; border-color:#EC0000; color:#EC0000;">3. INICIAR CARRERA</button>
         
         <button class="btn btn-accion" onclick="devolverLobby()">4. PAUSAR / LOBBY</button>
         <button class="btn btn-peligro" onclick="cerrarSala()">5. CERRAR SALA (EXPULSAR)</button>
         
         <button class="btn btn-ruleta" style="width: 100%; font-size: 14px;" onclick="lanzarRuleta()">6. SORTEAR GANADOR (RULETA)</button>
         
-        <!-- ZONA QA / TEST -->
         <h3 style="width: 100%; color: #666; font-size: 10px; font-family: 'Press Start 2P', cursive; margin: 10px 0 0 0; text-align: left;">ZONA DE PRUEBAS TÉCNICAS (QA):</h3>
         <button class="btn btn-qa" onclick="forzarFinal()">FORZAR LLEGADA</button>
         <button class="btn btn-qa" onclick="testLuces()">TEST ANIMACIÓN VICTORIA</button>
@@ -86,13 +83,12 @@
             let html = '';
             [1,2,3,4,5].forEach(id => {
                 const jgs = (datos[id] && datos[id].jugadores) ? Object.keys(datos[id].jugadores).length : 0;
-                let borderColor = jgs > 0 ? '#00ffcc' : '#555';
+                let borderColor = jgs > 0 ? '#EC0000' : '#555';
                 html += `<div class="team-col" style="border-bottom-color: ${borderColor}">${NOMBRES_EQUIPOS[id]}<span>${jgs}</span></div>`;
             });
             statsDiv.innerHTML = html;
         });
 
-        // Controles de Audio Máster
         window.actualizarVolumenVisual = () => { document.getElementById('vol-val').innerText = document.getElementById('vol-slider').value; };
         window.enviarVolumenFirebase = () => { set(ref(db, 'volumenGlobal'), document.getElementById('vol-slider').value / 100); };
         window.testSonidoTV = () => { set(ref(db, 'triggerSoundcheck'), Date.now()); };
@@ -101,7 +97,7 @@
             if(confirm("¿Crear una sala nueva? Esto borrará el juego actual.")) {
                 const pin = Math.floor(1000 + Math.random() * 9000).toString();
                 set(ref(db, 'salaActiva'), pin);
-                set(ref(db, 'ganadorRuleta'), null); // Limpiar ruleta previa
+                set(ref(db, 'ganadorRuleta'), null); 
                 const inicial = {};
                 [1,2,3,4,5].forEach(id => { inicial[id] = { clicksTotales: 0, jugadores: null }; });
                 set(ref(db, 'equipos'), inicial);
