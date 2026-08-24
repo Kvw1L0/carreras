@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        :root { --neon-red: #EC0000; --dark-bg: #0a0a0a; --oro: #FFD700; }
+        :root { --neon-red: #0300b6; --dark-bg: #0a0a0a; --oro: #f5f4f3; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Arial Black', sans-serif; color: #fff; overflow: hidden; touch-action: none; background: var(--dark-bg); overscroll-behavior: none; user-select: none; -webkit-user-select: none; }
         .con-fondo { background: url('fondo.png') center center / cover no-repeat; background-color: var(--dark-bg); }
         
@@ -34,8 +34,8 @@
         @keyframes pulso-lento { from { opacity: 0.3; transform: scale(1); } to { opacity: 1; transform: scale(1.05); } }
         @keyframes latido { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
-        .victoria-flash { animation: flashRW 0.2s infinite !important; background: #EC0000; z-index: 9999;}
-        @keyframes flashRW { 0% { background: #EC0000; } 50% { background: #fff; } 100% { background: #EC0000; } }
+        .victoria-flash { animation: flashRW 0.2s infinite !important; background: #0300b6; z-index: 9999;}
+        @keyframes flashRW { 0% { background: 00#0300b6; } 50% { background: #fff; } 100% { background: #0300b6; } }
         
         .ruleta-ganador-modo { animation: flashOro 0.2s infinite !important; }
         @keyframes flashOro { 0% { background: #000; } 50% { background: var(--oro); } 100% { background: #000; } }
@@ -44,7 +44,7 @@
         @keyframes sombra-latido { from { box-shadow: 0 0 10px rgba(236, 0, 0, 0.3); } to { box-shadow: 0 0 30px rgba(236, 0, 0, 0.8); } }
         
         .titulo-oro { color: var(--oro) !important; text-shadow: 0 0 15px var(--oro) !important; }
-        .texto-rojo-inverso { color: #EC0000 !important; text-shadow: 2px 2px 0 #000 !important; }
+        .texto-rojo-inverso { color: #0300b6 !important; text-shadow: 2px 2px 0 #000 !important; }
         .texto-blanco-puro { color: #fff !important; text-shadow: 2px 2px 0 #000 !important; }
         .texto-negro-inverso { color: #000 !important; text-shadow: none !important; }
         
