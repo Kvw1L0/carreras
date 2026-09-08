@@ -73,7 +73,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         
-        const NOMBRES_EQUIPOS = { 1: "M. JACKSON", 2: "F. MERCURY", 3: "SLASH", 4: "D. BOWIE", 5: "WINEHOUSE" };
+        const NOMBRES_EQUIPOS = { 1: "CHORIPAN", 2: "EMPANADA", 3: "CHUPALLA", 4: "TERREMOTO", 5: "VOLANTIN" };
 
         onValue(ref(db, 'salaActiva'), (snap) => { document.getElementById('display-pin').innerText = snap.val() || "----"; });
 
